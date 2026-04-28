@@ -1,5 +1,6 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.exception;
 
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Erros;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,8 @@ public class GlobalExceptionHandler {
                 .toList();
 
         ApiError erro = new ApiError(
-                "DADOS_INVALIDOS",
+                Erros.DADOS_INVALIDOS,
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 "Um ou mais itens estão inválidos, faça o preenchimento correto e tente novamente",
                 detalhesDoErro,
                 LocalDateTime.now(),
@@ -31,6 +33,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(erro);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleException(Exception exception, HttpServletRequest request) {
+
+        ApiError erro = new ApiError(
+                Erros.FALHA_INTERNA,
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+                LocalDateTime.now(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
+    }
 
 
 }
