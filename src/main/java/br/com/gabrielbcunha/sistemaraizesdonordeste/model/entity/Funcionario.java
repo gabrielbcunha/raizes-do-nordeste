@@ -29,7 +29,7 @@ public class Funcionario {
     @Column(nullable = false, length = 150)
     private String nome;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 

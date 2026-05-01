@@ -27,7 +27,7 @@ public class Cliente {
     @Column(nullable = false, unique = true)
     private String numContato;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name="usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
