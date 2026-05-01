@@ -29,10 +29,8 @@ public class Funcionario {
     @Column(nullable = false, length = 150)
     private String nome;
 
-    @Column(nullable = false, length = 200)
-    private String numCracha;
-
-    @Column(nullable = false, length = 200)
-    private String senha;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="usuario_id", nullable = false, unique = true)
+    private Usuario usuario;
 
 }

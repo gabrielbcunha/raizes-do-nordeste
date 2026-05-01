@@ -27,11 +27,9 @@ public class Cliente {
     @Column(nullable = false, unique = true)
     private String numContato;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(nullable = false)
-    private String senha;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="usuario_id", nullable = false, unique = true)
+    private Usuario usuario;
 
     @Column(unique = true)
     private Long numCadastroFidelidade;
