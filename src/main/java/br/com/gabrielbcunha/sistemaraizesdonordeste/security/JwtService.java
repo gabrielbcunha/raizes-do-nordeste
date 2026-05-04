@@ -4,6 +4,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Usuario;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -12,7 +13,11 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private static final String CHAVE_SECRETA = "SistemaRaizesDoNordesteChaveSecretaApiKeyTeste";
+    private final String chaveSecreta;
+
+    public JwtService(@Value("${chave.secreta}") String chaveSecreta) {
+        this.chaveSecreta = chaveSecreta;
+    }
 
     public String geradorToken(Usuario usuario) {
         return Jwts.builder()
@@ -35,7 +40,7 @@ public class JwtService {
     }
 
     public Key obterChaveDeAssinatura() {
-        return Keys.hmacShaKeyFor(CHAVE_SECRETA.getBytes());
+        return Keys.hmacShaKeyFor(chaveSecreta.getBytes());
     }
 
 }
