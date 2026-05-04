@@ -4,6 +4,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Erros;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -47,6 +48,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiError> badCredential(Exception exception, HttpServletRequest request) {
+
+        ApiError erro = new ApiError(
+                Erros.NAO_AUTORIZADO,
+                HttpStatus.UNAUTHORIZED.value(),
+                "Email ou senha incorretos",
+                LocalDateTime.now(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(erro);
+    }
 
 }
 
