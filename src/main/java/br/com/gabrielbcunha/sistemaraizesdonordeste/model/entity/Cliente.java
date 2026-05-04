@@ -32,7 +32,7 @@ public class Cliente {
     private Usuario usuario;
 
     @Column(unique = true)
-    private Long numCadastroFidelidade;
+    private String numCadastroFidelidade;
 
     @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer quantPontosFidelidade;
