@@ -31,8 +31,8 @@ public class AuthController {
 
     @PostMapping("/cadastrar")
     public ResponseEntity<CadastroClienteResponse> cadastrarCliente(@Valid @RequestBody CadastroClienteRequest cadastroClienteRequest) {
-        CadastroClienteResponse cadastroClienteResponse = authService.cadastrarCliente(cadastroClienteRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(cadastroClienteResponse);
+        CadastroClienteResponse cadastroCliente = authService.cadastrarCliente(cadastroClienteRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cadastroCliente);
     }
 
 
