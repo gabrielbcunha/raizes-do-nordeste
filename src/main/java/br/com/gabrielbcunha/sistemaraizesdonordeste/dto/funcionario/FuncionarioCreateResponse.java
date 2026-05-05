@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class FuncionarioResponse {
+public class FuncionarioCreateResponse {
 
     private String nome;
 
