@@ -62,6 +62,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(erro);
     }
 
+    @ExceptionHandler(RecursoNaoEncontradoException.class)
+    public ResponseEntity<ApiError> recursoNaoEncontrado(Exception exception, HttpServletRequest request) {
+
+        ApiError erro = new ApiError(
+                Erros.RECURSO_NAO_ENCONTRADO,
+                HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(),
+                LocalDateTime.now(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
+    }
+
 }
 
 
