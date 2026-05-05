@@ -13,13 +13,9 @@ import lombok.Setter;
 @Setter
 public class CadastroClienteResponse {
 
-    @NotBlank(message="O nome do cliente deve existir")
     private String nome;
 
-    @NotBlank(message="O número de contato do cliente deve existir")
     private String numContato;
 
-    @NotBlank(message="O email do usuário deve existir")
-    @Email
     private String email;
 }
