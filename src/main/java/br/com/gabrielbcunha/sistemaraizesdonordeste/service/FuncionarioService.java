@@ -1,7 +1,7 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.service;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioCreateRequest;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioCreateResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RecursoNaoEncontradoException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.FuncionarioMapper;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Funcionario;
@@ -28,7 +28,7 @@ public class FuncionarioService {
         this.unidadeRepository = unidadeRepository;
     }
 
-    public FuncionarioResponse cadastrarAtendente(FuncionarioCreateRequest createRequest){
+    public FuncionarioCreateResponse cadastrarAtendente(FuncionarioCreateRequest createRequest){
 
         Usuario novoUsuario = new Usuario();
         novoUsuario.setUserName(createRequest.getNumeroCracha());
