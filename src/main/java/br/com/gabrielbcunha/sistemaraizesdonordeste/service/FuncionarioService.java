@@ -7,6 +7,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.FuncionarioMapper;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Funcionario;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Unidade;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Usuario;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Cargo;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Perfil;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.FuncionarioRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UnidadeRepository;
@@ -42,6 +43,7 @@ public class FuncionarioService {
         Funcionario novoAtendente = funcionarioMapper.toEntity(createRequest);
         novoAtendente.setUsuario(novoUsuario);
         novoAtendente.setUnidade(unidadeSelecionada);
+        novoAtendente.setCargo(Cargo.ATENDENTE);
 
         Funcionario atendenteCriado = funcionarioRepository.save(novoAtendente);
         return funcionarioMapper.toDto(atendenteCriado);
