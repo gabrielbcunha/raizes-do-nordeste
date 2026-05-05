@@ -1,6 +1,5 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario;
 
-import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Cargo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,9 +12,6 @@ public class FuncionarioCreateRequest {
 
     @NotNull(message="O ID da únidade deve existir")
     private Long idUnidade;
-
-    @NotNull(message="O cargo do funcionário deve existir")
-    private Cargo cargo;
 
     @NotBlank(message="O nome do funcionário deve existir")
     private String nome;
