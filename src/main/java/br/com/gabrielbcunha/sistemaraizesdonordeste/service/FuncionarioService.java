@@ -31,11 +31,7 @@ public class FuncionarioService {
 
     public FuncionarioCreateResponse cadastrarAtendente(FuncionarioCreateRequest createRequest){
 
-        Usuario novoUsuario = new Usuario();
-        novoUsuario.setUserName(createRequest.getNumeroCracha());
-        String senha = this.passwordEncoder.encode(createRequest.getSenha());
-        novoUsuario.setSenha(senha);
-        novoUsuario.setPerfil(Perfil.ROLE_ATENDENTE);
+        Usuario novoUsuario = cadastrarUsuario(createRequest, Perfil.ROLE_ATENDENTE);
 
         Unidade unidadeSelecionada = unidadeRepository.findById(createRequest.getIdUnidade())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Unidade de ID: " + createRequest.getIdUnidade() + " não encontrada"));
@@ -49,6 +45,15 @@ public class FuncionarioService {
         return funcionarioMapper.toDto(atendenteCriado);
     }
 
+    private Usuario cadastrarUsuario(FuncionarioCreateRequest request, Perfil perfil){
+
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setUserName(request.getNumeroCracha());
+        String senha = this.passwordEncoder.encode(request.getSenha());
+        novoUsuario.setSenha(senha);
+        novoUsuario.setPerfil(perfil);
+        return novoUsuario;
+    }
 
 
 }
