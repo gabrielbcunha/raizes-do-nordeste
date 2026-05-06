@@ -31,18 +31,46 @@ public class FuncionarioService {
 
     public FuncionarioCreateResponse cadastrarAtendente(FuncionarioCreateRequest createRequest){
 
-        Usuario novoUsuario = cadastrarUsuario(createRequest, Perfil.ROLE_ATENDENTE);
-
-        Unidade unidadeSelecionada = unidadeRepository.findById(createRequest.getIdUnidade())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Unidade de ID: " + createRequest.getIdUnidade() + " não encontrada"));
-
         Funcionario novoAtendente = funcionarioMapper.toEntity(createRequest);
-        novoAtendente.setUsuario(novoUsuario);
-        novoAtendente.setUnidade(unidadeSelecionada);
+        novoAtendente.setUsuario(cadastrarUsuario(createRequest, Perfil.ROLE_ATENDENTE));
+        novoAtendente.setUnidade(procurarUnidade(createRequest));
         novoAtendente.setCargo(Cargo.ATENDENTE);
 
         Funcionario atendenteCriado = funcionarioRepository.save(novoAtendente);
         return funcionarioMapper.toDto(atendenteCriado);
+    }
+
+    public FuncionarioCreateResponse cadastrarCozinheiro(FuncionarioCreateRequest createRequest){
+
+        Funcionario novoCozinheiro = funcionarioMapper.toEntity(createRequest);
+        novoCozinheiro.setUsuario(cadastrarUsuario(createRequest, Perfil.ROLE_COZINHEIRO));
+        novoCozinheiro.setUnidade(procurarUnidade(createRequest));
+        novoCozinheiro.setCargo(Cargo.COZINHEIRO);
+
+        Funcionario cozinheiroCriado = funcionarioRepository.save(novoCozinheiro);
+        return funcionarioMapper.toDto(cozinheiroCriado);
+    }
+
+    public FuncionarioCreateResponse cadastrarAdministrativo(FuncionarioCreateRequest createRequest){
+
+        Funcionario novoAdministrativo = funcionarioMapper.toEntity(createRequest);
+        novoAdministrativo.setUsuario(cadastrarUsuario(createRequest, Perfil.ROLE_ADMINISTRATIVO));
+        novoAdministrativo.setUnidade(procurarUnidade(createRequest));
+        novoAdministrativo.setCargo(Cargo.ADMINISTRATIVO);
+
+        Funcionario administrativoCriado = funcionarioRepository.save(novoAdministrativo);
+        return funcionarioMapper.toDto(administrativoCriado);
+    }
+
+    public FuncionarioCreateResponse cadastrarGerente(FuncionarioCreateRequest createRequest){
+
+        Funcionario novoGerente = funcionarioMapper.toEntity(createRequest);
+        novoGerente.setUsuario(cadastrarUsuario(createRequest, Perfil.ROLE_GERENTE));
+        novoGerente.setUnidade(procurarUnidade(createRequest));
+        novoGerente.setCargo(Cargo.GERENTE);
+
+        Funcionario gerenteCriado = funcionarioRepository.save(novoGerente);
+        return funcionarioMapper.toDto(gerenteCriado);
     }
 
     private Usuario cadastrarUsuario(FuncionarioCreateRequest request, Perfil perfil){
@@ -55,5 +83,10 @@ public class FuncionarioService {
         return novoUsuario;
     }
 
+    private Unidade procurarUnidade(FuncionarioCreateRequest request){
+        Unidade unidadeSelecionada = unidadeRepository.findById(request.getIdUnidade())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Unidade de ID: " + request.getIdUnidade() + " não encontrada"));
+        return  unidadeSelecionada;
+    }
 
 }
