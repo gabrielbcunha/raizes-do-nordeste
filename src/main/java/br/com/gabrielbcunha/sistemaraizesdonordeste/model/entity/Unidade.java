@@ -1,6 +1,7 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.CanalPedido;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.TipoEntrega;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +20,7 @@ public class Unidade {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false)
     private Long id;
 
     @Column(name="nome_unidade", nullable = false, length = 150)
@@ -33,5 +34,11 @@ public class Unidade {
     @CollectionTable(name = "unidade_canais", joinColumns = @JoinColumn(name = "unidade_id"))
     @Column(name = "canal")
     private List<CanalPedido> canaisSuportados;
+
+    @ElementCollection(targetClass = TipoEntrega.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "unidade_entrega", joinColumns = @JoinColumn(name = "unidade_id"))
+    @Column(name = "entrega")
+    private List<TipoEntrega> entregasSuportadas;
 
 }
