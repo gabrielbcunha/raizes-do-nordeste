@@ -27,4 +27,22 @@ public class FuncionarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(cadastroAtendente);
     }
 
+    @PostMapping("/cozinheiros")
+    public ResponseEntity<FuncionarioCreateResponse> cadastrarCozinheiro(@Valid @RequestBody FuncionarioCreateRequest funcionarioCreateRequest) {
+        FuncionarioCreateResponse cadastroCozinheiro = funcionarioService.cadastrarCozinheiro(funcionarioCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cadastroCozinheiro);
+    }
+
+    @PostMapping("/administrativos")
+    public ResponseEntity<FuncionarioCreateResponse> cadastrarAdministrativo(@Valid @RequestBody FuncionarioCreateRequest funcionarioCreateRequest) {
+        FuncionarioCreateResponse cadastroAdministrativo = funcionarioService.cadastrarAdministrativo(funcionarioCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cadastroAdministrativo);
+    }
+
+    @PostMapping("/gerentes")
+    public ResponseEntity<FuncionarioCreateResponse> cadastrarGerente(@Valid @RequestBody FuncionarioCreateRequest funcionarioCreateRequest) {
+        FuncionarioCreateResponse cadastroGerente = funcionarioService.cadastrarGerente(funcionarioCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cadastroGerente);
+    }
+
 }
