@@ -1,4 +1,4 @@
-package br.com.gabrielbcunha.sistemaraizesdonordeste.dto.auth;
+package br.com.gabrielbcunha.sistemaraizesdonordeste.dto.cliente;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.br.CPF;
 
 @Getter
 @Setter
-public class CadastroClienteRequest {
+public class ClienteCreateRequest {
 
     @NotBlank(message="O nome do cliente deve existir")
     private String nome;

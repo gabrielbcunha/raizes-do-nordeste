@@ -1,7 +1,7 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.controller;
 
-import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.auth.CadastroClienteRequest;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.auth.CadastroClienteResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.cliente.ClienteCreateRequest;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.cliente.ClienteCreateResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.auth.LoginRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.auth.TokenResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.service.AuthService;
@@ -30,8 +30,8 @@ public class AuthController {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<CadastroClienteResponse> cadastrarCliente(@Valid @RequestBody CadastroClienteRequest cadastroClienteRequest) {
-        CadastroClienteResponse cadastroCliente = authService.cadastrarCliente(cadastroClienteRequest);
+    public ResponseEntity<ClienteCreateResponse> cadastrarCliente(@Valid @RequestBody ClienteCreateRequest cadastroClienteRequest) {
+        ClienteCreateResponse cadastroCliente = authService.cadastrarCliente(cadastroClienteRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(cadastroCliente);
     }
 

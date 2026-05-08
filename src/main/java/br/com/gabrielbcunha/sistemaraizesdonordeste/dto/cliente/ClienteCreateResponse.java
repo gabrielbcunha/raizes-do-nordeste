@@ -1,7 +1,5 @@
-package br.com.gabrielbcunha.sistemaraizesdonordeste.dto.auth;
+package br.com.gabrielbcunha.sistemaraizesdonordeste.dto.cliente;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CadastroClienteResponse {
+public class ClienteCreateResponse {
 
     private String nome;
 

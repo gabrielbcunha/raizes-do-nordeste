@@ -1,7 +1,7 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.service;
 
-import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.auth.CadastroClienteRequest;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.auth.CadastroClienteResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.cliente.ClienteCreateRequest;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.cliente.ClienteCreateResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.auth.LoginRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.auth.TokenResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.ClienteMapper;
@@ -33,7 +33,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public CadastroClienteResponse cadastrarCliente(CadastroClienteRequest request){
+    public ClienteCreateResponse cadastrarCliente(ClienteCreateRequest request){
 
         Usuario novoUsuario = new Usuario();
         novoUsuario.setUserName(request.getEmail());
