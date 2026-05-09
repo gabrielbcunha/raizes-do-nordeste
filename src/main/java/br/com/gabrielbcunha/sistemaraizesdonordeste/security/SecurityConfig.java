@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/unidade").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.POST,"/itens").hasAnyRole("ADMIN", "GERENTE", "ADMINISTRATIVO")
                         .requestMatchers(HttpMethod.POST,"/menu").hasAnyRole("ADMIN", "GERENTE", "ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.POST,"/estoque").hasAnyRole("ADMIN", "GERENTE", "ADMINISTRATIVO")
                         //...
                         .anyRequest().authenticated()
                 )
