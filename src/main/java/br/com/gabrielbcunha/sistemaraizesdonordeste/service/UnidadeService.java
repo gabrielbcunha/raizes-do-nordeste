@@ -6,6 +6,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.UnidadeMapper;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Unidade;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UnidadeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UnidadeService {
@@ -18,6 +19,7 @@ public class UnidadeService {
         this.unidadeMapper = unidadeMapper;
     }
 
+    @Transactional
     public UnidadeCreateResponse cadastrarUnidade(UnidadeCreateRequest unidadeCreateRequest) {
         Unidade novaUnidade = unidadeMapper.toEntity(unidadeCreateRequest);
         Unidade unidadeSalva = unidadeRepository.save(novaUnidade);

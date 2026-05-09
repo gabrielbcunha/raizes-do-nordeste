@@ -13,6 +13,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.FuncionarioReposi
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UnidadeRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FuncionarioService {
@@ -29,6 +30,7 @@ public class FuncionarioService {
         this.unidadeRepository = unidadeRepository;
     }
 
+    @Transactional
     public FuncionarioCreateResponse cadastrarAtendente(FuncionarioCreateRequest createRequest){
 
         Funcionario novoAtendente = funcionarioMapper.toEntity(createRequest);
@@ -40,6 +42,7 @@ public class FuncionarioService {
         return funcionarioMapper.toDto(atendenteCriado);
     }
 
+    @Transactional
     public FuncionarioCreateResponse cadastrarCozinheiro(FuncionarioCreateRequest createRequest){
 
         Funcionario novoCozinheiro = funcionarioMapper.toEntity(createRequest);
@@ -51,6 +54,7 @@ public class FuncionarioService {
         return funcionarioMapper.toDto(cozinheiroCriado);
     }
 
+    @Transactional
     public FuncionarioCreateResponse cadastrarAdministrativo(FuncionarioCreateRequest createRequest){
 
         Funcionario novoAdministrativo = funcionarioMapper.toEntity(createRequest);
@@ -62,6 +66,7 @@ public class FuncionarioService {
         return funcionarioMapper.toDto(administrativoCriado);
     }
 
+    @Transactional
     public FuncionarioCreateResponse cadastrarGerente(FuncionarioCreateRequest createRequest){
 
         Funcionario novoGerente = funcionarioMapper.toEntity(createRequest);
@@ -73,6 +78,7 @@ public class FuncionarioService {
         return funcionarioMapper.toDto(gerenteCriado);
     }
 
+
     private Usuario cadastrarUsuario(FuncionarioCreateRequest request, Perfil perfil){
 
         Usuario novoUsuario = new Usuario();
@@ -82,6 +88,7 @@ public class FuncionarioService {
         novoUsuario.setPerfil(perfil);
         return novoUsuario;
     }
+
 
     private Unidade procurarUnidade(FuncionarioCreateRequest request){
         Unidade unidadeSelecionada = unidadeRepository.findById(request.getIdUnidade())

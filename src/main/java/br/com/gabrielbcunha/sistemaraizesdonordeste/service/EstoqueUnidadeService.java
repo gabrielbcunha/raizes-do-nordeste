@@ -11,6 +11,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.EstoqueUnidadeRep
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.ItemRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UnidadeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EstoqueUnidadeService {
@@ -27,6 +28,7 @@ public class EstoqueUnidadeService {
         this.estoqueUnidadeMapper = estoqueUnidadeMapper;
     }
 
+    @Transactional
     public EstoqueUnidadeCreateResponse cadastrarItemEstoque (EstoqueUnidadeCreateRequest estoqueUnidadeCreateRequest) {
 
         Item itemBuscado = itemRepository.findById(estoqueUnidadeCreateRequest.getItemId())

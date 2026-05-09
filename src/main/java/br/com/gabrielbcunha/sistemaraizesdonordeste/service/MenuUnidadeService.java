@@ -11,6 +11,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.ItemRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.MenuUnidadeRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UnidadeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MenuUnidadeService {
@@ -27,6 +28,7 @@ public class MenuUnidadeService {
         this.menuUnidadeMapper = menuUnidadeMapper;
     }
 
+    @Transactional
     public MenuUnidadeCreateResponse cadastarItemMenu(MenuUnidadeCreateRequest menuUnidadeCreateRequest){
 
         Item itemBuscado = itemRepository.findById(menuUnidadeCreateRequest.getItemId())
