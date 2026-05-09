@@ -3,6 +3,7 @@ package br.com.gabrielbcunha.sistemaraizesdonordeste.service;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.itemPedido.ItemPedidoCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.EstoqueInsuficienteException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RecursoNaoEncontradoException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.PedidoMapper;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.*;
@@ -25,14 +26,17 @@ public class PedidoService {
     private final ItemRepository itemRepository;
     private final UnidadeRepository unidadeRepository;
     private final ClienteRepository clienteRepository;
+    private final EstoqueUnidadeRepository estoqueUnidadeRepository;
     private final PedidoMapper pedidoMapper;
 
-    public PedidoService(PedidoRepository pedidoRepository, ItemPedidoRepository itemPedidoRepository, ItemRepository itemRepository, UnidadeRepository unidadeRepository, ClienteRepository clienteRepository, PedidoMapper pedidoMapper) {
+
+    public PedidoService(PedidoRepository pedidoRepository, ItemPedidoRepository itemPedidoRepository, ItemRepository itemRepository, UnidadeRepository unidadeRepository, ClienteRepository clienteRepository, EstoqueUnidadeRepository estoqueUnidadeRepository, PedidoMapper pedidoMapper) {
         this.pedidoRepository = pedidoRepository;
         this.itemPedidoRepository = itemPedidoRepository;
         this.itemRepository = itemRepository;
         this.unidadeRepository = unidadeRepository;
         this.clienteRepository = clienteRepository;
+        this.estoqueUnidadeRepository = estoqueUnidadeRepository;
         this.pedidoMapper = pedidoMapper;
     }
 
@@ -60,6 +64,11 @@ public class PedidoService {
             Item produto = itemRepository.findById(itemRequest.getItemId())
                     .orElseThrow(() -> new RecursoNaoEncontradoException("Item de ID: " + itemRequest.getItemId() + " Não encontrado"));
 
+            EstoqueUnidade estoqueUnidade = estoqueUnidadeRepository.findByUnidadeIdAndItemId(pedidoCreateRequest.getUnidadeId(), produto.getId())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Estoque da unidade de ID: " + pedidoCreateRequest.getUnidadeId() + " Não encontrado"));
+
+            verificarEBaixarEstoque(itemRequest.getQuantidade(), estoqueUnidade);
+
             ItemPedido item = new ItemPedido();
             item.setItem(produto);
             item.setQuantidade(itemRequest.getQuantidade());
@@ -80,5 +89,14 @@ public class PedidoService {
         return pedidoMapper.toDto(pedidoSalvo);
     }
 
+    private void verificarEBaixarEstoque(Integer quantidadePedida, EstoqueUnidade estoqueItem){
+
+        if (estoqueItem.getQuantidade() < quantidadePedida) {
+            throw new EstoqueInsuficienteException("A quantidade pedida do produto é maior do que a contida em estoque");
+        }
+
+        Integer novaQuantidade = estoqueItem.getQuantidade() - quantidadePedida;
+        estoqueItem.setQuantidade(novaQuantidade);
+    }
 
 }

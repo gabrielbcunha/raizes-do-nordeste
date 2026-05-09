@@ -76,6 +76,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
 
+    @ExceptionHandler(EstoqueInsuficienteException.class)
+    public ResponseEntity<ApiError> estoqueInsuficiente(Exception exception, HttpServletRequest request) {
+
+        ApiError erro = new ApiError(
+                Erros.ESTOQUE_INSUFICIENTE,
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                exception.getMessage(),
+                LocalDateTime.now(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(erro);
+    }
+
 }
 
 
