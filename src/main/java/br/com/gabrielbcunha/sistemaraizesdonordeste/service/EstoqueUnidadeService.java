@@ -4,7 +4,6 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.estoqueUnidade.EstoqueUn
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.estoqueUnidade.EstoqueUnidadeCreateResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RecursoNaoEncontradoException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.EstoqueUnidadeMapper;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.MenuUnidadeMapper;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.EstoqueUnidade;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Item;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Unidade;

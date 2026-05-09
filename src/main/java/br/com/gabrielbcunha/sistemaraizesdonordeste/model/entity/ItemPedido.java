@@ -34,4 +34,7 @@ public class ItemPedido {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valorUnitario;
 
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal valorTotalParcial;
+
 }

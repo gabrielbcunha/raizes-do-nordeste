@@ -1,9 +1,6 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity;
 
-import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.CanalPedido;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.FormaPagamento;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPagamento;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPedido;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -56,6 +53,10 @@ public class Pedido {
     @Column(nullable=false)
     @Enumerated(EnumType.STRING)
     private StatusPagamento statusPagamento;
+
+    @Column(nullable=false)
+    @Enumerated(EnumType.STRING)
+    private TipoEntrega tipoEntrega;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valorTotal;
