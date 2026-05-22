@@ -4,12 +4,13 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioC
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioCreateResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.service.FuncionarioService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/funcionarios")
@@ -43,6 +44,12 @@ public class FuncionarioController {
     public ResponseEntity<FuncionarioCreateResponse> cadastrarGerente(@Valid @RequestBody FuncionarioCreateRequest funcionarioCreateRequest) {
         FuncionarioCreateResponse cadastroGerente = funcionarioService.cadastrarGerente(funcionarioCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(cadastroGerente);
+    }
+
+    @GetMapping()
+    public ResponseEntity<Page<FuncionarioCreateResponse>> listarTodosFuncionarios(@PageableDefault(sort="unidade.id", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<FuncionarioCreateResponse> listaFuncionarios =  funcionarioService.listarTodosFuncionarios(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(listaFuncionarios);
     }
 
 }

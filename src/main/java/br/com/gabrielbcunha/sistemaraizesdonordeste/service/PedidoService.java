@@ -10,6 +10,10 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.*;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPagamento;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPedido;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +26,6 @@ import java.util.List;
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
-    private final ItemPedidoRepository itemPedidoRepository;
     private final ItemRepository itemRepository;
     private final UnidadeRepository unidadeRepository;
     private final ClienteRepository clienteRepository;
@@ -30,9 +33,8 @@ public class PedidoService {
     private final PedidoMapper pedidoMapper;
 
 
-    public PedidoService(PedidoRepository pedidoRepository, ItemPedidoRepository itemPedidoRepository, ItemRepository itemRepository, UnidadeRepository unidadeRepository, ClienteRepository clienteRepository, EstoqueUnidadeRepository estoqueUnidadeRepository, PedidoMapper pedidoMapper) {
+    public PedidoService(PedidoRepository pedidoRepository, ItemRepository itemRepository, UnidadeRepository unidadeRepository, ClienteRepository clienteRepository, EstoqueUnidadeRepository estoqueUnidadeRepository, PedidoMapper pedidoMapper) {
         this.pedidoRepository = pedidoRepository;
-        this.itemPedidoRepository = itemPedidoRepository;
         this.itemRepository = itemRepository;
         this.unidadeRepository = unidadeRepository;
         this.clienteRepository = clienteRepository;
@@ -98,5 +100,11 @@ public class PedidoService {
         Integer novaQuantidade = estoqueItem.getQuantidade() - quantidadePedida;
         estoqueItem.setQuantidade(novaQuantidade);
     }
+
+    public Page<PedidoCreateResponse> listarTodosPedidos(Pageable pageable) {
+        Page<Pedido> paginaPedidos = pedidoRepository.findAll(pageable);
+        return paginaPedidos.map(pedidoMapper::toDto);
+    }
+
 
 }

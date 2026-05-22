@@ -11,6 +11,10 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Cargo;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Perfil;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.FuncionarioRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UnidadeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,6 +98,11 @@ public class FuncionarioService {
         Unidade unidadeSelecionada = unidadeRepository.findById(request.getIdUnidade())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Unidade de ID: " + request.getIdUnidade() + " não encontrada"));
         return  unidadeSelecionada;
+    }
+
+    public Page<FuncionarioCreateResponse> listarTodosFuncionarios(Pageable pageable) {
+        Page<Funcionario> paginaFuncionarios = funcionarioRepository.findAll(pageable);
+        return paginaFuncionarios.map(funcionarioMapper::toDto);
     }
 
 }

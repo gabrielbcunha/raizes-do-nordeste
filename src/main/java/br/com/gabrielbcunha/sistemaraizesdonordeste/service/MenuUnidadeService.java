@@ -10,6 +10,10 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Unidade;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.ItemRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.MenuUnidadeRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UnidadeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +46,11 @@ public class MenuUnidadeService {
 
         MenuUnidade novoItemMenuSalvo = menuUnidadeRepository.save(novoItemMenu);
         return menuUnidadeMapper.toDto(novoItemMenuSalvo);
+    }
+
+    public Page<MenuUnidadeCreateResponse> listarTodosMenuUnidades(Pageable pageable) {
+        Page<MenuUnidade> paginaMenuUnidades = menuUnidadeRepository.findAll(pageable);
+        return paginaMenuUnidades.map(menuUnidadeMapper::toDto);
     }
 
 }

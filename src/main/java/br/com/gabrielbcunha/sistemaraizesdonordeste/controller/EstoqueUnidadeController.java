@@ -4,12 +4,13 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.estoqueUnidade.EstoqueUn
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.estoqueUnidade.EstoqueUnidadeCreateResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.service.EstoqueUnidadeService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/estoque")
@@ -27,4 +28,9 @@ public class EstoqueUnidadeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(cadastroItemEstoque);
     }
 
+    @GetMapping()
+    public ResponseEntity<Page<EstoqueUnidadeCreateResponse>> listarTodosEstoques(@PageableDefault(sort="unidade.id", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<EstoqueUnidadeCreateResponse> listaEstoqueUnidade = estoqueUnidadeService.listarTodosEstoques(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(listaEstoqueUnidade);
+    }
 }

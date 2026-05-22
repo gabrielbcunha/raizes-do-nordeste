@@ -10,6 +10,10 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Unidade;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.EstoqueUnidadeRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.ItemRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UnidadeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,5 +48,9 @@ public class EstoqueUnidadeService {
         return estoqueUnidadeMapper.toDto(novoItemEstoqueSalvo);
     }
 
+    public Page<EstoqueUnidadeCreateResponse> listarTodosEstoques(Pageable pageable) {
+        Page<EstoqueUnidade> paginaEstoqueUnidade = estoqueUnidadeRepository.findAll(pageable);
+        return paginaEstoqueUnidade.map(estoqueUnidadeMapper::toDto);
+    }
 
 }

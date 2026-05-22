@@ -34,17 +34,30 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
+                        //=================================================CADASTRO=================================================
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/cadastrar").permitAll()
+                        //=================================================FUNCIONARIOS=================================================
+                        .requestMatchers(HttpMethod.GET, "/funcionarios").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/atendentes").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/cozinheiros").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/administrativos").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/gerentes").hasRole("ADMIN")
+                        //=================================================UNIDADE=================================================
                         .requestMatchers(HttpMethod.POST,"/unidade").hasAnyRole("ADMIN", "GERENTE")
+                        .requestMatchers(HttpMethod.GET, "/unidade").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO")
+                        //=================================================ITENS=================================================
                         .requestMatchers(HttpMethod.POST,"/itens").hasAnyRole("ADMIN", "GERENTE", "ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.GET, "/itens").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO")
+                        //=================================================MENU=================================================
                         .requestMatchers(HttpMethod.POST,"/menu").hasAnyRole("ADMIN", "GERENTE", "ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.GET, "/menu").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO", "ATENDENTE")
+                        //=================================================ESTOQUE=================================================
                         .requestMatchers(HttpMethod.POST,"/estoque").hasAnyRole("ADMIN", "GERENTE", "ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.GET, "/estoque").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO")
+                        //=================================================PEDIDO=================================================
                         .requestMatchers(HttpMethod.POST,"/pedido").hasAnyRole("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE")
-                        //...
+                        .requestMatchers(HttpMethod.GET, "/pedido").hasAnyRole("ADMIN","GERENTE", "ATENDENTE")
+                        //========================================================================================================
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

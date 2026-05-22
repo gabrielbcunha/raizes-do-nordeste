@@ -4,12 +4,11 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.item.ItemCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.item.ItemCreateResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.service.ItemService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/itens")
@@ -27,6 +26,10 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(cadastroItem);
     }
 
-
+    @GetMapping()
+    public ResponseEntity<Page<ItemCreateResponse>> listarTodosItems(Pageable pageable){
+        Page<ItemCreateResponse> listaItems = itemService.listarTodosItems(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(listaItems);
+    }
 
 }
