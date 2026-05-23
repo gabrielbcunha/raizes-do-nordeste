@@ -37,7 +37,7 @@ public class SecurityConfig {
                         //=================================================CADASTRO=================================================
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/cadastrar").permitAll()
                         //=================================================FUNCIONARIOS=================================================
-                        .requestMatchers(HttpMethod.GET, "/funcionarios").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO")
+                        .requestMatchers(HttpMethod.GET, "/funcionarios").hasAnyRole("ADMIN","GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/atendentes").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/cozinheiros").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/administrativos").hasAnyRole("ADMIN", "GERENTE")
@@ -57,6 +57,8 @@ public class SecurityConfig {
                         //=================================================PEDIDO=================================================
                         .requestMatchers(HttpMethod.POST,"/pedido").hasAnyRole("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE")
                         .requestMatchers(HttpMethod.GET, "/pedido").hasAnyRole("ADMIN","GERENTE", "ATENDENTE")
+                        //=================================================Swagger=================================================
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         //========================================================================================================
                         .anyRequest().authenticated()
                 )
