@@ -31,6 +31,9 @@ public class ItemPedido {
     @Column(nullable = false)
     private Integer quantidade;
 
+    @Column(nullable = false)
+    private Integer quantidadeTotalParcialPontosFidelidade;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valorUnitario;
 

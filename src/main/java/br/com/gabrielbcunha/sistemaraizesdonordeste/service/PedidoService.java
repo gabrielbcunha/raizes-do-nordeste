@@ -60,6 +60,7 @@ public class PedidoService {
 
         List<ItemPedido> itensDoPedido = new ArrayList<>();
         BigDecimal valorTotal = BigDecimal.ZERO;
+        Integer valorTotalPontosFidelidade = 0;
 
         for (ItemPedidoCreateRequest itemRequest : pedidoCreateRequest.getItens()) {
 
@@ -79,6 +80,10 @@ public class PedidoService {
             BigDecimal totalItem = produto.getPreco().multiply(new BigDecimal(itemRequest.getQuantidade()));
             item.setValorTotalParcial(totalItem);
             valorTotal = valorTotal.add(totalItem);
+
+            Integer totalParcialPontosFidelidade = produto.getQuantidadePontosFidelidade() * itemRequest.getQuantidade();
+            item.setQuantidadeTotalParcialPontosFidelidade(totalParcialPontosFidelidade);
+            valorTotalPontosFidelidade = valorTotalPontosFidelidade + totalParcialPontosFidelidade;
 
             item.setPedido(novoPedido);
             itensDoPedido.add(item);

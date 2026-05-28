@@ -31,6 +31,9 @@ public class Cliente {
     @JoinColumn(name="usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
+    @Column(nullable = false)
+    private boolean programaFidelidadeAtivo;
+
     @Column(unique = true)
     private String numCadastroFidelidade;
 

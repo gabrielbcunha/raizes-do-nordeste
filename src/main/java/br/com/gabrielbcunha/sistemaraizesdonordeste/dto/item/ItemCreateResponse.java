@@ -17,6 +17,8 @@ public class ItemCreateResponse {
 
     private String descricao;
 
+    private Integer quantidadePontosFidelidade;
+
     private BigDecimal preco;
 
 }

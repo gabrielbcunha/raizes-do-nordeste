@@ -22,4 +22,6 @@ public class PagamentoResponse {
 
     public StatusPagamento statusPagamento;
 
+    public Integer quantidadePontosFidelidade;
+
 }

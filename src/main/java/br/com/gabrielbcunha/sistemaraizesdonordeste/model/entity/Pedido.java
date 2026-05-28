@@ -58,6 +58,9 @@ public class Pedido {
     @Enumerated(EnumType.STRING)
     private TipoEntrega tipoEntrega;
 
+    @Column(nullable = false)
+    private Integer quantidadeTotalPontosFidelidade;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valorTotal;
 
