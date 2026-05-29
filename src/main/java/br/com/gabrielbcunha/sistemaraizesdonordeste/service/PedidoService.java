@@ -1,6 +1,7 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.service;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.itemPedido.ItemPedidoCreateRequest;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCancelarResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.EstoqueInsuficienteException;
@@ -90,6 +91,7 @@ public class PedidoService {
 
         novoPedido.setItens(itensDoPedido);
         novoPedido.setValorTotal(valorTotal);
+        novoPedido.setQuantidadeTotalPontosFidelidade(valorTotalPontosFidelidade);
 
         Pedido pedidoSalvo = pedidoRepository.save(novoPedido);
         return pedidoMapper.toDto(pedidoSalvo);
@@ -115,6 +117,35 @@ public class PedidoService {
             return paginaPedidosPorCanalPedido.map(pedidoMapper::toDto);
         }
     }
+
+    @Transactional
+    public PedidoCancelarResponse cancelarPedido(Long id) {
+        Pedido pedidoCancelado = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Pedido não encontrado"));
+
+        pedidoCancelado.setStatusPedido(StatusPedido.CANCELADO);
+
+        for (ItemPedido itemPedido : pedidoCancelado.getItens()) {
+
+            Long idDoProduto = itemPedido.getItem().getId();
+
+            Long idDaUnidade = pedidoCancelado.getUnidade().getId();
+
+            EstoqueUnidade estoqueUnidade = estoqueUnidadeRepository.findByUnidadeIdAndItemId(idDaUnidade, idDoProduto)
+                   .orElseThrow(() -> new RecursoNaoEncontradoException("Estoque da unidade de ID: " + idDaUnidade + " Não encontrado"));
+
+            reporEstoquePedidoCancelado(itemPedido.getQuantidade(), estoqueUnidade);
+
+        }
+        return pedidoMapper.toDtoCancel(pedidoCancelado);
+    }
+
+
+    private void reporEstoquePedidoCancelado(Integer quantidadePedida, EstoqueUnidade estoqueItem){
+        Integer novaQuantidade = estoqueItem.getQuantidade() + quantidadePedida;
+        estoqueItem.setQuantidade(novaQuantidade);
+    }
+
 
 
 }

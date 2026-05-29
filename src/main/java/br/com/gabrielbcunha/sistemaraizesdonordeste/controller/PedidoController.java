@@ -1,5 +1,6 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.controller;
 
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCancelarResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.CanalPedido;
@@ -49,6 +50,13 @@ public class PedidoController {
     public ResponseEntity<Page<PedidoCreateResponse>> listarPedidos(@RequestParam(required = false) CanalPedido canalPedido, @PageableDefault(sort="unidade.id", direction= Sort.Direction.ASC) Pageable pageable ) {
         Page<PedidoCreateResponse> listarPedidos = pedidoService.listarPedidos(canalPedido, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listarPedidos);
+    }
+
+
+    @PostMapping("/cancelar/{id}")
+    public ResponseEntity<PedidoCancelarResponse> cancelarPedido(@PathVariable Long id) {
+        PedidoCancelarResponse cancelarPedido = pedidoService.cancelarPedido(id);
+        return ResponseEntity.status(HttpStatus.OK).body(cancelarPedido);
     }
 
 

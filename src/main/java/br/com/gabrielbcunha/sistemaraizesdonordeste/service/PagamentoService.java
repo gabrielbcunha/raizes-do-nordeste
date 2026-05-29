@@ -19,10 +19,12 @@ import java.util.Random;
 public class PagamentoService {
 
     private final PedidoRepository pedidoRepository;
+    private final PedidoService pedidoService;
     private final ClienteRepository clienteRepository;
 
-    public PagamentoService(PedidoRepository pedidoRepository, ClienteRepository clienteRepository) {
+    public PagamentoService(PedidoRepository pedidoRepository, PedidoService pedidoService, ClienteRepository clienteRepository) {
         this.pedidoRepository = pedidoRepository;
+        this.pedidoService = pedidoService;
         this.clienteRepository = clienteRepository;
     }
 
@@ -55,6 +57,7 @@ public class PagamentoService {
                 }
             } else {
                 pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_RECUSADO);
+                pedidoService.cancelarPedido(id);
             }
         }
 

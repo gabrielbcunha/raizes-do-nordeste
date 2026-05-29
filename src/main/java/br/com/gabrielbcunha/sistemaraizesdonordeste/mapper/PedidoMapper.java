@@ -1,6 +1,7 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.mapper;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.itemPedido.ItemPedidoCreateResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCancelarResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.ItemPedido;
@@ -21,6 +22,10 @@ public interface PedidoMapper {
     @Mapping(source = "cliente.id", target = "clienteId")
     @Mapping(source = "unidade.id", target = "unidadeId")
     PedidoCreateResponse toDto(Pedido pedido);
+
+    @Mapping(source = "cliente.id", target = "clienteId")
+    @Mapping(source = "unidade.id", target = "unidadeId")
+    PedidoCancelarResponse toDtoCancel(Pedido pedido);
 
     @Mapping(source = "item.id", target = "itemId")
     ItemPedidoCreateResponse itemPedidoToDto(ItemPedido itemPedido);
