@@ -1,6 +1,7 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.itemPedido.ItemPedidoCreateResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.CanalPedido;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPedido;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class PedidoCancelarResponse {
 
     private Long unidadeId;
 
-    private String canalPedido;
+    private CanalPedido canalPedido;
 
     private List<ItemPedidoCreateResponse> itens;
 

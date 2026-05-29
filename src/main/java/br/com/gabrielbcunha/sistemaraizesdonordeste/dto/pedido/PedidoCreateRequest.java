@@ -1,6 +1,9 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.itemPedido.ItemPedidoCreateRequest;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.CanalPedido;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.FormaPagamento;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.TipoEntrega;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -23,15 +26,15 @@ public class PedidoCreateRequest {
     private Long unidadeId;
 
     @NotBlank(message="O canal de pedido deve existir")
-    private String canalPedido;
+    private CanalPedido canalPedido;
 
     @NotEmpty(message="A lista de Itens não pod estar vazia")
     private List<ItemPedidoCreateRequest> itens;
 
     @NotBlank(message="A forma de pagamento deve existir")
-    private String formaPagamento;
+    private FormaPagamento formaPagamento;
 
     @NotBlank(message="O tipo de entrega deve existir")
-    private String tipoEntrega;
+    private TipoEntrega tipoEntrega;
 
 }
