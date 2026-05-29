@@ -4,6 +4,5 @@ public enum Cargo {
     ATENDENTE,
     COZINHEIRO,
     ADMINISTRATIVO,
-    RECURSOS_HUMANOS,
     GERENTE
 }

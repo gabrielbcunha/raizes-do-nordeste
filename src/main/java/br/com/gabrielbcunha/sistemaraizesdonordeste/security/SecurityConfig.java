@@ -57,6 +57,8 @@ public class SecurityConfig {
                         //=================================================PEDIDO=================================================
                         .requestMatchers(HttpMethod.POST,"/pedido").hasAnyRole("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE")
                         .requestMatchers(HttpMethod.GET, "/pedido").hasAnyRole("ADMIN","GERENTE", "ATENDENTE")
+                        .requestMatchers(HttpMethod.POST,"/pedido/cancelar/").hasAnyRole("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE")
+                        .requestMatchers(HttpMethod.PATCH,"/pedido/status/").hasAnyRole("ADMIN", "GERENTE", "ATENDENTE", "COZINHEIRO")
                         //=================================================Swagger=================================================
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         //========================================================================================================

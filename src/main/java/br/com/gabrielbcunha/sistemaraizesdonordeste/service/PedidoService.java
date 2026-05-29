@@ -1,9 +1,7 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.service;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.itemPedido.ItemPedidoCreateRequest;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCancelarResponse;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateRequest;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.*;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.EstoqueInsuficienteException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RecursoNaoEncontradoException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.PedidoMapper;
@@ -140,12 +138,21 @@ public class PedidoService {
         return pedidoMapper.toDtoCancel(pedidoCancelado);
     }
 
-
     private void reporEstoquePedidoCancelado(Integer quantidadePedida, EstoqueUnidade estoqueItem){
         Integer novaQuantidade = estoqueItem.getQuantidade() + quantidadePedida;
         estoqueItem.setQuantidade(novaQuantidade);
     }
 
+    @Transactional
+    public PedidoPatchStatusResponse mudarStatusPedido(Long id, PedidoPatchStatusRequest statusRequest) {
+        Pedido pedidoProcurado = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Pedido de ID: " + id + " não encontrado"));
+
+        StatusPedido statusPedido = statusRequest.getStatusPedido();
+        pedidoProcurado.setStatusPedido(statusPedido);
+
+        return new PedidoPatchStatusResponse(id, statusPedido);
+    }
 
 
 }
