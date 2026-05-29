@@ -2,6 +2,7 @@ package br.com.gabrielbcunha.sistemaraizesdonordeste.controller;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.PedidoCreateResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.CanalPedido;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.service.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,12 +41,13 @@ public class PedidoController {
     }
 
     @GetMapping()
-    @Operation(summary="Lista todos os Pedidos")
+    @Operation(summary="Lista os Pedidos",
+                description="Endpoint para listar todos os pedidos, pode ser filtra para listar por canalPedido especifico")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo")
     })
-    public ResponseEntity<Page<PedidoCreateResponse>> listarTodosPedidos(@PageableDefault(sort="unidade.id", direction= Sort.Direction.ASC) Pageable pageable) {
-        Page<PedidoCreateResponse> listarPedidos = pedidoService.listarTodosPedidos(pageable);
+    public ResponseEntity<Page<PedidoCreateResponse>> listarPedidos(@RequestParam(required = false) CanalPedido canalPedido, @PageableDefault(sort="unidade.id", direction= Sort.Direction.ASC) Pageable pageable ) {
+        Page<PedidoCreateResponse> listarPedidos = pedidoService.listarPedidos(canalPedido, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listarPedidos);
     }
 

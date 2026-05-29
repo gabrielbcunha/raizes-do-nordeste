@@ -7,13 +7,12 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.EstoqueInsuficient
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RecursoNaoEncontradoException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.PedidoMapper;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.*;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.CanalPedido;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPagamento;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPedido;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,9 +105,15 @@ public class PedidoService {
         estoqueItem.setQuantidade(novaQuantidade);
     }
 
-    public Page<PedidoCreateResponse> listarTodosPedidos(Pageable pageable) {
-        Page<Pedido> paginaPedidos = pedidoRepository.findAll(pageable);
-        return paginaPedidos.map(pedidoMapper::toDto);
+    public Page<PedidoCreateResponse> listarPedidos(CanalPedido canalPedido, Pageable pageable) {
+        if (canalPedido == null) {
+            Page<Pedido> paginaPedidos = pedidoRepository.findAll(pageable);
+            return paginaPedidos.map(pedidoMapper::toDto);
+        }
+        else {
+            Page<Pedido> paginaPedidosPorCanalPedido = pedidoRepository.findPedidoByCanalPedido(canalPedido);
+            return paginaPedidosPorCanalPedido.map(pedidoMapper::toDto);
+        }
     }
 
 
