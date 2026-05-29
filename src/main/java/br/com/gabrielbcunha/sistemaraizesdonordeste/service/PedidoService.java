@@ -113,7 +113,7 @@ public class PedidoService {
             return paginaPedidos.map(pedidoMapper::toDto);
         }
         else {
-            Page<Pedido> paginaPedidosPorCanalPedido = pedidoRepository.findPedidoByCanalPedido(canalPedido);
+            Page<Pedido> paginaPedidosPorCanalPedido = pedidoRepository.findPedidoByCanalPedido(canalPedido, pageable);
             return paginaPedidosPorCanalPedido.map(pedidoMapper::toDto);
         }
     }
