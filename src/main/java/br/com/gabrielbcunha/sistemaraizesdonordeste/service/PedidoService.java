@@ -121,19 +121,21 @@ public class PedidoService {
         Pedido pedidoCancelado = pedidoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Pedido não encontrado"));
 
-        pedidoCancelado.setStatusPedido(StatusPedido.CANCELADO);
+        if (pedidoCancelado.getStatusPedido() != StatusPedido.CANCELADO){
+            pedidoCancelado.setStatusPedido(StatusPedido.CANCELADO);
 
-        for (ItemPedido itemPedido : pedidoCancelado.getItens()) {
+            for (ItemPedido itemPedido : pedidoCancelado.getItens()) {
 
-            Long idDoProduto = itemPedido.getItem().getId();
+                Long idDoProduto = itemPedido.getItem().getId();
 
-            Long idDaUnidade = pedidoCancelado.getUnidade().getId();
+                Long idDaUnidade = pedidoCancelado.getUnidade().getId();
 
-            EstoqueUnidade estoqueUnidade = estoqueUnidadeRepository.findByUnidadeIdAndItemId(idDaUnidade, idDoProduto)
-                   .orElseThrow(() -> new RecursoNaoEncontradoException("Estoque da unidade de ID: " + idDaUnidade + " Não encontrado"));
+                EstoqueUnidade estoqueUnidade = estoqueUnidadeRepository.findByUnidadeIdAndItemId(idDaUnidade, idDoProduto)
+                       .orElseThrow(() -> new RecursoNaoEncontradoException("Estoque da unidade de ID: " + idDaUnidade + " Não encontrado"));
 
-            reporEstoquePedidoCancelado(itemPedido.getQuantidade(), estoqueUnidade);
+                reporEstoquePedidoCancelado(itemPedido.getQuantidade(), estoqueUnidade);
 
+            }
         }
         return pedidoMapper.toDtoCancel(pedidoCancelado);
     }
