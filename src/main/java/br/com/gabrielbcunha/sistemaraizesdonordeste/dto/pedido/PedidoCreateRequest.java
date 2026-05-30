@@ -25,16 +25,16 @@ public class PedidoCreateRequest {
     @Positive(message="O ID da unidade deve ser positivo")
     private Long unidadeId;
 
-    @NotBlank(message="O canal de pedido deve existir")
+    @NotNull(message="O canal de pedido deve existir")
     private CanalPedido canalPedido;
 
     @NotEmpty(message="A lista de Itens não pod estar vazia")
     private List<ItemPedidoCreateRequest> itens;
 
-    @NotBlank(message="A forma de pagamento deve existir")
+    @NotNull(message="A forma de pagamento deve existir")
     private FormaPagamento formaPagamento;
 
-    @NotBlank(message="O tipo de entrega deve existir")
+    @NotNull(message="O tipo de entrega deve existir")
     private TipoEntrega tipoEntrega;
 
 }
