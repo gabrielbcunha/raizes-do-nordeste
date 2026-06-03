@@ -48,9 +48,17 @@ public class MenuUnidadeService {
         return menuUnidadeMapper.toDto(novoItemMenuSalvo);
     }
 
-    public Page<MenuUnidadeCreateResponse> listarTodosMenuUnidades(Pageable pageable) {
-        Page<MenuUnidade> paginaMenuUnidades = menuUnidadeRepository.findAll(pageable);
-        return paginaMenuUnidades.map(menuUnidadeMapper::toDto);
+    public Page<MenuUnidadeCreateResponse> listarMenuUnidades(Long idUnidade, Pageable pageable) {
+        if (idUnidade == null) {
+            Page<MenuUnidade> paginaMenuUnidades = menuUnidadeRepository.findAll(pageable);
+            return paginaMenuUnidades.map(menuUnidadeMapper::toDto);
+        }
+        else {
+            Unidade unidadeMenuPedido = unidadeRepository.findById(idUnidade)
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Unidade de ID: " + idUnidade + " não encontrada"));
+            Page<MenuUnidade> paginaMenuUnidadePorUnidade = menuUnidadeRepository.findMenuUnidadeByUnidade(unidadeMenuPedido, pageable);
+            return paginaMenuUnidadePorUnidade.map(menuUnidadeMapper::toDto);
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package br.com.gabrielbcunha.sistemaraizesdonordeste.controller;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.menuUnidade.MenuUnidadeCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.menuUnidade.MenuUnidadeCreateResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.MenuUnidade;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.service.MenuUnidadeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,13 +41,12 @@ public class MenuUnidadeController {
     }
 
     @GetMapping()
-    @Operation(summary="Lista todos os Itens de todos os Menus")
+    @Operation(summary="Lista os Itens dos Menus das Unidades podendo ou não ser filtrado por Unidade")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo")
     })
-    public ResponseEntity<Page<MenuUnidadeCreateResponse>> listarTodosMenuUnidades(@PageableDefault(sort="unidade.id", direction = Sort.Direction.ASC) Pageable pageable){
-        Page<MenuUnidadeCreateResponse> listarMenuUnidade = menuUnidadeService.listarTodosMenuUnidades(pageable);
+    public ResponseEntity<Page<MenuUnidadeCreateResponse>> listarTodosMenuUnidades(@RequestParam(required = false) Long idUnidade, @PageableDefault(sort="unidade.id", direction = Sort.Direction.ASC) Pageable pageable){
+        Page<MenuUnidadeCreateResponse> listarMenuUnidade = menuUnidadeService.listarMenuUnidades(idUnidade,pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listarMenuUnidade);
     }
-
 }

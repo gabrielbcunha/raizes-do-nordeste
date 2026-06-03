@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/itens").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO")
                         //=================================================MENU=================================================
                         .requestMatchers(HttpMethod.POST,"/menu").hasAnyRole("ADMIN", "GERENTE", "ADMINISTRATIVO")
-                        .requestMatchers(HttpMethod.GET, "/menu").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO", "ATENDENTE")
+                        .requestMatchers(HttpMethod.GET, "/menu").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO", "ATENDENTE", "CLIENTE")
                         //=================================================ESTOQUE=================================================
                         .requestMatchers(HttpMethod.POST,"/estoque").hasAnyRole("ADMIN", "GERENTE", "ADMINISTRATIVO")
                         .requestMatchers(HttpMethod.GET, "/estoque").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO")
