@@ -48,7 +48,7 @@ public class AuthController {
             @ApiResponse(responseCode = "422", description = "Usuário não cadastrado, alguma informação com preenchimento incorreto")
     })
     public ResponseEntity<ClienteCreateResponse> cadastrarCliente(@Valid @RequestBody ClienteCreateRequest cadastroClienteRequest) {
-        ClienteCreateResponse cadastroCliente = authService.cadastrarCliente(cadastroClienteRequest);
+        ClienteCreateResponse cadastroCliente = authService.cadastrarNovoCliente(cadastroClienteRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(cadastroCliente);
     }
 }
