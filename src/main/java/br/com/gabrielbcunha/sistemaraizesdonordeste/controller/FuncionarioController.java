@@ -2,6 +2,8 @@ package br.com.gabrielbcunha.sistemaraizesdonordeste.controller;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioCreateResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioDeleteRequest;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioDeleteResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.service.FuncionarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -84,5 +86,12 @@ public class FuncionarioController {
         Page<FuncionarioCreateResponse> listaFuncionarios =  funcionarioService.listarTodosFuncionarios(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listaFuncionarios);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<FuncionarioDeleteResponse> deletarFuncionario(@PathVariable Long id, @Valid @RequestBody FuncionarioDeleteRequest request) {
+        FuncionarioDeleteResponse funcionarioDeletado = funcionarioService.deletarDadosFuncionario(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(funcionarioDeletado);
+    }
+
 
 }

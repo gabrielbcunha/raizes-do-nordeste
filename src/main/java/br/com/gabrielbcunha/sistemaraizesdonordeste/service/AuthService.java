@@ -11,7 +11,6 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,18 +18,12 @@ public class AuthService {
 
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final ClienteRepository clienteRepository;
-    private final ClienteMapper clienteMapper;
     private final ClienteService clienteService;
-    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(JwtService jwtService, AuthenticationManager authenticationManager, ClienteRepository clienteRepository, ClienteMapper clienteMapper, ClienteService clienteService, PasswordEncoder passwordEncoder) {
+    public AuthService(JwtService jwtService, AuthenticationManager authenticationManager, ClienteService clienteService) {
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
-        this.clienteRepository = clienteRepository;
-        this.clienteMapper = clienteMapper;
         this.clienteService = clienteService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public ClienteCreateResponse cadastrarNovoCliente(ClienteCreateRequest cadastroClienteRequest) {

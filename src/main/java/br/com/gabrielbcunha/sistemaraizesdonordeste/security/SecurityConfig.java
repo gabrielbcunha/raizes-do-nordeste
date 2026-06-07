@@ -34,14 +34,19 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        //=================================================CADASTRO=================================================
+                        //=================================================LOGIN=================================================
+                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        //=================================================CLIENTES=================================================
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/cadastrar").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/cliente/{id}").hasRole("CLIENTE")
                         //=================================================FUNCIONARIOS=================================================
                         .requestMatchers(HttpMethod.GET, "/funcionarios").hasAnyRole("ADMIN","GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/atendentes").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/cozinheiros").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/administrativos").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/gerentes").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/funcionarios/{id}").hasAnyRole("ADMIN", "GERENTE")
+
                         //=================================================UNIDADE=================================================
                         .requestMatchers(HttpMethod.POST,"/unidade").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.GET, "/unidade").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO")

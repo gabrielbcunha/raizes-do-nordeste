@@ -2,7 +2,10 @@ package br.com.gabrielbcunha.sistemaraizesdonordeste.service;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioCreateResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioDeleteRequest;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.funcionario.FuncionarioDeleteResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RecursoNaoEncontradoException;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RegraNegocioException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.FuncionarioMapper;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Funcionario;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Unidade;
@@ -11,13 +14,21 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Cargo;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Perfil;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.FuncionarioRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UnidadeRepository;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class FuncionarioService {
@@ -26,12 +37,19 @@ public class FuncionarioService {
     private final FuncionarioMapper funcionarioMapper;
     private final PasswordEncoder passwordEncoder;
     private final UnidadeRepository unidadeRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final AuthenticationManager authenticationManager;
 
-    public FuncionarioService(FuncionarioRepository funcionarioRepository, FuncionarioMapper funcionarioMapper, PasswordEncoder passwordEncoder, UnidadeRepository unidadeRepository) {
+    @Value("${senha.anonimizado}")
+    private String senhaAnonimizado;
+
+    public FuncionarioService(FuncionarioRepository funcionarioRepository, FuncionarioMapper funcionarioMapper, PasswordEncoder passwordEncoder, UnidadeRepository unidadeRepository, UsuarioRepository usuarioRepository, AuthenticationManager authenticationManager) {
         this.funcionarioRepository = funcionarioRepository;
         this.funcionarioMapper = funcionarioMapper;
         this.passwordEncoder = passwordEncoder;
         this.unidadeRepository = unidadeRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.authenticationManager = authenticationManager;
     }
 
     @Transactional
@@ -81,6 +99,43 @@ public class FuncionarioService {
         Funcionario gerenteCriado = funcionarioRepository.save(novoGerente);
         return funcionarioMapper.toDto(gerenteCriado);
     }
+
+    @Transactional
+    public FuncionarioDeleteResponse deletarDadosFuncionario(Long id, FuncionarioDeleteRequest request){
+        Funcionario funcionarioBuscado = funcionarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Funcionário não encontrado"));
+
+        Usuario usuarioBuscado = usuarioRepository.findById(funcionarioBuscado.getUsuario().getId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado"));
+
+        String consentimento = request.getConsentimento().toLowerCase().replaceAll("[^A-Za-z]+","");
+
+        Authentication autenticacaoAtual = SecurityContextHolder.getContext().getAuthentication();
+        if (autenticacaoAtual != null) {
+            String userNameLogado = autenticacaoAtual.getName();
+
+            if (consentimento.equals("aceito")) {
+
+                UsernamePasswordAuthenticationToken login = new UsernamePasswordAuthenticationToken(userNameLogado, request.getSenha());
+                Authentication autenticacao = authenticationManager.authenticate(login);
+
+                usuarioBuscado.setUserName("AnonimizadoFuncionario@id" + usuarioBuscado.getId() + "deletado.com");
+                usuarioBuscado.setSenha(senhaAnonimizado);
+                usuarioRepository.save(usuarioBuscado);
+
+                funcionarioBuscado.setNome("Anonimizado");
+                funcionarioRepository.save(funcionarioBuscado);
+            } else {
+                throw new RegraNegocioException("Palavra de consentimento inválida");
+            }
+        }
+        FuncionarioDeleteResponse funcionarioDeletado = new FuncionarioDeleteResponse();
+        funcionarioDeletado.setNomeFuncionario(funcionarioBuscado.getNome());
+        funcionarioDeletado.setDataDelecao(LocalDateTime.now());
+        funcionarioDeletado.setResponsavelPelaDelecao(autenticacaoAtual.getName());
+        return funcionarioDeletado;
+    }
+
 
 
     private Usuario cadastrarUsuario(FuncionarioCreateRequest request, Perfil perfil){

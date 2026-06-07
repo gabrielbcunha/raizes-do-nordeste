@@ -89,6 +89,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(erro);
     }
 
+    @ExceptionHandler(RegraNegocioException.class)
+    public ResponseEntity<ApiError> regraNegocioException(Exception exception, HttpServletRequest request) {
+
+        ApiError erro = new ApiError(
+                Erros.PALAVRA_INCORRETA,
+                HttpStatus.NOT_ACCEPTABLE.value(),
+                exception.getMessage(),
+                LocalDateTime.now(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(erro);
+    }
+
+
 }
 
 
