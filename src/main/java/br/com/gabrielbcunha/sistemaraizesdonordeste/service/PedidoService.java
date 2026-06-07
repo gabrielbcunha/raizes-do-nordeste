@@ -4,6 +4,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.itemPedido.ItemPedidoCre
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pedido.*;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.EstoqueInsuficienteException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RecursoNaoEncontradoException;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RegraNegocioException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.PedidoMapper;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.*;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.CanalPedido;
@@ -150,10 +151,37 @@ public class PedidoService {
         Pedido pedidoProcurado = pedidoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Pedido de ID: " + id + " não encontrado"));
 
-        StatusPedido statusPedido = statusRequest.getStatusPedido();
-        pedidoProcurado.setStatusPedido(statusPedido);
+        StatusPedido statusOriginalPedido = pedidoProcurado.getStatusPedido();
+        StatusPedido statusNovoDoPedido = statusRequest.getStatusPedido();
 
-        return new PedidoPatchStatusResponse(id, statusPedido);
+        switch (statusOriginalPedido){
+            case AGUARDANDO_CONFIRMACAO:
+                break;
+            case CONFIRMADO:
+                if (statusNovoDoPedido == StatusPedido.AGUARDANDO_CONFIRMACAO){
+                    throw new RegraNegocioException("Não é possível retroceder um pedido já confirmado.");
+                }
+                break;
+            case EM_PREPARO:
+                if (statusNovoDoPedido == StatusPedido.AGUARDANDO_CONFIRMACAO || statusNovoDoPedido == StatusPedido.CONFIRMADO){
+                    throw new RegraNegocioException("Não é possível retroceder um pedido em preparo");
+                }
+                break;
+            case PRONTO_PARA_RETIRADA:
+                if (statusNovoDoPedido == StatusPedido.AGUARDANDO_CONFIRMACAO || statusNovoDoPedido == StatusPedido.CONFIRMADO || statusNovoDoPedido == StatusPedido.EM_PREPARO){
+                    throw new RegraNegocioException("Não é possível retroceder um pedido já pronto para retirada");
+                }
+                break;
+            case FINALIZADO:
+                throw new RegraNegocioException("O pedido já foi finalizado, seu status não pode ser alterado");
+            case CANCELADO:
+                throw new RegraNegocioException("O pedido foi cancelado, seu status não pode ser alterado");
+            default:
+                throw new RegraNegocioException("Status de origem inválido");
+        }
+
+        pedidoProcurado.setStatusPedido(statusNovoDoPedido);
+        return new PedidoPatchStatusResponse(id, statusNovoDoPedido);
     }
 
 
