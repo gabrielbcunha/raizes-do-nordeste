@@ -79,18 +79,13 @@ public class PedidoService {
             BigDecimal totalItem = produto.getPreco().multiply(new BigDecimal(itemRequest.getQuantidade()));
             item.setValorTotalParcial(totalItem);
             valorTotal = valorTotal.add(totalItem);
-
-            Integer totalParcialPontosFidelidade = produto.getQuantidadePontosFidelidade() * itemRequest.getQuantidade();
-            item.setQuantidadeTotalParcialPontosFidelidade(totalParcialPontosFidelidade);
-            valorTotalPontosFidelidade = valorTotalPontosFidelidade + totalParcialPontosFidelidade;
-
             item.setPedido(novoPedido);
             itensDoPedido.add(item);
         }
 
         novoPedido.setItens(itensDoPedido);
+        novoPedido.setQuantidadeTotalPontosFidelidade(new BigDecimal(100).multiply(valorTotal).intValue());
         novoPedido.setValorTotal(valorTotal);
-        novoPedido.setQuantidadeTotalPontosFidelidade(valorTotalPontosFidelidade);
 
         Pedido pedidoSalvo = pedidoRepository.save(novoPedido);
         return pedidoMapper.toDto(pedidoSalvo);

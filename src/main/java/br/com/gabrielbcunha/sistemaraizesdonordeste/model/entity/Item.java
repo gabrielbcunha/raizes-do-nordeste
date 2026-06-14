@@ -23,9 +23,6 @@ public class Item {
     @Column(nullable = false,length = 300)
     private String descricao;
 
-    @Column(nullable = false)
-    private Integer quantidadePontosFidelidade;
-
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal preco;
 }

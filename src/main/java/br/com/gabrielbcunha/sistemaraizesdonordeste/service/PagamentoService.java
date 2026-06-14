@@ -2,9 +2,11 @@ package br.com.gabrielbcunha.sistemaraizesdonordeste.service;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pagamento.PagamentoRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pagamento.PagamentoResponse;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pontosFidelidade.PontosFidelidadeCreateRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RecursoNaoEncontradoException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Cliente;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Pedido;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.PontosFidelidade;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.FormaPagamento;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPagamento;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPedido;
@@ -20,11 +22,13 @@ public class PagamentoService {
 
     private final PedidoRepository pedidoRepository;
     private final PedidoService pedidoService;
+    private final PontosFidelidadeService pontosFidelidadeService;
     private final ClienteRepository clienteRepository;
 
-    public PagamentoService(PedidoRepository pedidoRepository, PedidoService pedidoService, ClienteRepository clienteRepository) {
+    public PagamentoService(PedidoRepository pedidoRepository, PedidoService pedidoService, PontosFidelidadeService pontosFidelidadeService, ClienteRepository clienteRepository) {
         this.pedidoRepository = pedidoRepository;
         this.pedidoService = pedidoService;
+        this.pontosFidelidadeService = pontosFidelidadeService;
         this.clienteRepository = clienteRepository;
     }
 
@@ -36,6 +40,10 @@ public class PagamentoService {
         Cliente clientePedido = clienteRepository.findById(pedidoProcurado.getCliente().getId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente não encontrado!"));
 
+        String clienteNumeroFidelidade = clientePedido.getNumCadastroFidelidade();
+        Long pedidoId = pedidoProcurado.getId();
+        Integer quantidadePontos = pedidoProcurado.getQuantidadeTotalPontosFidelidade();
+
         boolean programaFidelidadeAtivo = clientePedido.isProgramaFidelidadeAtivo();
 
         Integer quantidadeExistentePontosFidelidade = clientePedido.getQuantPontosFidelidade();
@@ -45,6 +53,7 @@ public class PagamentoService {
             pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_CONFIRMADO);
             pedidoProcurado.setStatusPedido(StatusPedido.CONFIRMADO);
             if (programaFidelidadeAtivo) {
+                criarPontoFidelidade(clienteNumeroFidelidade, pedidoId, quantidadePontos);
                 clientePedido.setQuantPontosFidelidade(quantidadeExistentePontosFidelidade + quantidadePontosFidelidade);
             }
         } else if (request.getFormaPagamento() == FormaPagamento.CARTAO_CREDITO ||  request.getFormaPagamento() == FormaPagamento.CARTAO_DEBITO || request.getFormaPagamento() == FormaPagamento.VALE_ALIMENTACAO) {
@@ -54,6 +63,7 @@ public class PagamentoService {
                 pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_CONFIRMADO);
                 if (programaFidelidadeAtivo) {
                     clientePedido.setQuantPontosFidelidade(quantidadeExistentePontosFidelidade + quantidadePontosFidelidade);
+                    criarPontoFidelidade(clienteNumeroFidelidade, pedidoId, quantidadePontos);
                 }
             } else {
                 pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_RECUSADO);
@@ -80,6 +90,14 @@ public class PagamentoService {
             pago = false;
         }
         return pago;
+    }
+
+    public void criarPontoFidelidade(String numCadastroFidelidade, Long pedidoId, Integer quantidadePontos) {
+        PontosFidelidadeCreateRequest request = new PontosFidelidadeCreateRequest();
+        request.setNumCadastroFidelidade(numCadastroFidelidade);
+        request.setPedidoId(pedidoId);
+        request.setQuantidadePontos(quantidadePontos);
+        pontosFidelidadeService.criarPontosFidelidade(request);
     }
 
 }
