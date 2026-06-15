@@ -59,7 +59,6 @@ public class PedidoService {
 
         List<ItemPedido> itensDoPedido = new ArrayList<>();
         BigDecimal valorTotal = BigDecimal.ZERO;
-        Integer valorTotalPontosFidelidade = 0;
 
         for (ItemPedidoCreateRequest itemRequest : pedidoCreateRequest.getItens()) {
 
@@ -84,8 +83,16 @@ public class PedidoService {
         }
 
         novoPedido.setItens(itensDoPedido);
-        novoPedido.setQuantidadeTotalPontosFidelidade(new BigDecimal(100).multiply(valorTotal).intValue());
         novoPedido.setValorTotal(valorTotal);
+
+        if (pedidoCreateRequest.isUsarPontosFidelidade()) {
+            BigDecimal valorDesconto = calcularDesconto(clienteBuscado.getQuantPontosFidelidade(), valorTotal);
+            novoPedido.setValorDesconto(valorDesconto);
+            novoPedido.setValorComDesconto(valorTotal.subtract(valorDesconto));
+        }
+
+        BigDecimal valorBaseParaPontos = novoPedido.getValorComDesconto() != null ? novoPedido.getValorComDesconto() : valorTotal;
+        novoPedido.setQuantidadeTotalPontosFidelidade(new BigDecimal(100).multiply(valorBaseParaPontos).intValue());
 
         Pedido pedidoSalvo = pedidoRepository.save(novoPedido);
         return pedidoMapper.toDto(pedidoSalvo);
@@ -179,5 +186,27 @@ public class PedidoService {
         return new PedidoPatchStatusResponse(id, statusNovoDoPedido);
     }
 
+
+    public BigDecimal calcularDesconto(Integer quantidadePontosCliente, BigDecimal valorTotal){
+
+        BigDecimal quantidadePontos = BigDecimal.valueOf(quantidadePontosCliente);
+        BigDecimal total = valorTotal;
+        BigDecimal reguaPontos = new BigDecimal("50");
+
+        BigDecimal[] divisaoPontos = total.divideAndRemainder(reguaPontos);
+
+        BigDecimal vezesDivisao =  divisaoPontos[0];
+        BigDecimal resto = divisaoPontos[1];
+
+        BigDecimal descontoMaximoDePontos = vezesDivisao.multiply(new BigDecimal(10000));
+
+        if (quantidadePontos.compareTo(descontoMaximoDePontos) > 0 || quantidadePontos.compareTo(descontoMaximoDePontos) == 0) {
+            BigDecimal valorDesconto = descontoMaximoDePontos.divide(new BigDecimal(1000));
+            return valorDesconto;
+        } else {
+            BigDecimal valorDesconto = quantidadePontos.divide(new BigDecimal(1000));
+            return valorDesconto;
+        }
+    }
 
 }

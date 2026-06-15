@@ -61,7 +61,15 @@ public class Pedido {
     @Column(nullable = false)
     private Integer quantidadeTotalPontosFidelidade;
 
+    @Column(nullable = false)
+    private boolean usarPontosFidelidade;
+
+    @Column(nullable = true, precision = 10, scale = 2)
+    private BigDecimal valorDesconto;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valorTotal;
 
+    @Column(nullable = true, precision = 10, scale = 2)
+    private BigDecimal valorComDesconto;
 }

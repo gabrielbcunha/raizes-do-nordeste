@@ -55,6 +55,7 @@ public class PagamentoService {
             if (programaFidelidadeAtivo) {
                 criarPontoFidelidade(clienteNumeroFidelidade, pedidoId, quantidadePontos);
                 clientePedido.setQuantPontosFidelidade(quantidadeExistentePontosFidelidade + quantidadePontosFidelidade);
+                descontarPontosFidelidade(pedidoProcurado, clientePedido, pedidoId, clienteNumeroFidelidade);
             }
         } else if (request.getFormaPagamento() == FormaPagamento.CARTAO_CREDITO ||  request.getFormaPagamento() == FormaPagamento.CARTAO_DEBITO || request.getFormaPagamento() == FormaPagamento.VALE_ALIMENTACAO) {
             Boolean pago = testeDeLimiteCartao();
@@ -64,6 +65,7 @@ public class PagamentoService {
                 if (programaFidelidadeAtivo) {
                     clientePedido.setQuantPontosFidelidade(quantidadeExistentePontosFidelidade + quantidadePontosFidelidade);
                     criarPontoFidelidade(clienteNumeroFidelidade, pedidoId, quantidadePontos);
+                    descontarPontosFidelidade(pedidoProcurado, clientePedido, pedidoId, clienteNumeroFidelidade);
                 }
             } else {
                 pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_RECUSADO);
@@ -98,6 +100,14 @@ public class PagamentoService {
         request.setPedidoId(pedidoId);
         request.setQuantidadePontos(quantidadePontos);
         pontosFidelidadeService.criarPontosFidelidade(request);
+    }
+
+    public void descontarPontosFidelidade(Pedido pedido, Cliente cliente, Long pedidoId, String numeroFidelidade) {
+        if (pedido.isUsarPontosFidelidade() && pedido.getValorDesconto() != null) {
+            Integer quantidadeDePontosDescontados = (pedido.getValorDesconto().intValue() * 1000) * (-1);
+            criarPontoFidelidade(numeroFidelidade, pedidoId, quantidadeDePontosDescontados);
+            cliente.setQuantPontosFidelidade(cliente.getQuantPontosFidelidade() + quantidadeDePontosDescontados);
+        }
     }
 
 }

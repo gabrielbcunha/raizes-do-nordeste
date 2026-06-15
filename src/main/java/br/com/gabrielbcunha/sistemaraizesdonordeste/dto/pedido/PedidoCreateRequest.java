@@ -37,4 +37,7 @@ public class PedidoCreateRequest {
     @NotNull(message="O tipo de entrega deve existir")
     private TipoEntrega tipoEntrega;
 
+    @NotEmpty(message="Deve ser informado se será aplicado os pontos fidelidade ou não")
+    private boolean usarPontosFidelidade;
+
 }

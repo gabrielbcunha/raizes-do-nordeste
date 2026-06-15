@@ -30,4 +30,8 @@ public class PedidoCreateResponse {
 
     private BigDecimal valorTotal;
 
+    private BigDecimal valorDesconto;
+
+    private BigDecimal valorTotalDesconto;
+
 }
