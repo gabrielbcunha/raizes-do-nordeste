@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="unidade")
@@ -40,5 +42,8 @@ public class Unidade {
     @CollectionTable(name = "unidade_entrega", joinColumns = @JoinColumn(name = "unidade_id"))
     @Column(name = "entrega")
     private List<TipoEntrega> entregasSuportadas;
+
+    @ManyToMany(mappedBy = "unidades")
+    private Set<Promocao> promocoes = new HashSet<>();
 
 }

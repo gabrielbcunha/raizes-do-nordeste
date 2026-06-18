@@ -46,7 +46,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/funcionarios/administrativos").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.POST,"/funcionarios/gerentes").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/funcionarios/{id}").hasAnyRole("ADMIN", "GERENTE")
-
                         //=================================================UNIDADE=================================================
                         .requestMatchers(HttpMethod.POST,"/unidade").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.GET, "/unidade").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO")
@@ -59,6 +58,8 @@ public class SecurityConfig {
                         //=================================================ESTOQUE=================================================
                         .requestMatchers(HttpMethod.POST,"/estoque").hasAnyRole("ADMIN", "GERENTE", "ADMINISTRATIVO")
                         .requestMatchers(HttpMethod.GET, "/estoque").hasAnyRole("ADMIN","GERENTE", "ADMINISTRATIVO")
+                        //=================================================PROMOCAO=================================================
+                        .requestMatchers(HttpMethod.POST,"/unidade/promocao").hasAnyRole("ADMIN", "GERENTE", "ADMINISTRATIVO")
                         //=================================================PEDIDO=================================================
                         .requestMatchers(HttpMethod.POST,"/pedido").hasAnyRole("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE")
                         .requestMatchers(HttpMethod.GET, "/pedido").hasAnyRole("ADMIN","GERENTE", "ATENDENTE")

@@ -10,6 +10,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.*;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.CanalPedido;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPagamento;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPedido;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.TipoPromocao;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PedidoService {
@@ -29,15 +31,17 @@ public class PedidoService {
     private final UnidadeRepository unidadeRepository;
     private final ClienteRepository clienteRepository;
     private final EstoqueUnidadeRepository estoqueUnidadeRepository;
+    private final PromocaoRepository promocaoRepository;
     private final PedidoMapper pedidoMapper;
 
 
-    public PedidoService(PedidoRepository pedidoRepository, ItemRepository itemRepository, UnidadeRepository unidadeRepository, ClienteRepository clienteRepository, EstoqueUnidadeRepository estoqueUnidadeRepository, PedidoMapper pedidoMapper) {
+    public PedidoService(PedidoRepository pedidoRepository, ItemRepository itemRepository, UnidadeRepository unidadeRepository, ClienteRepository clienteRepository, EstoqueUnidadeRepository estoqueUnidadeRepository, PromocaoRepository promocaoRepository, PedidoMapper pedidoMapper) {
         this.pedidoRepository = pedidoRepository;
         this.itemRepository = itemRepository;
         this.unidadeRepository = unidadeRepository;
         this.clienteRepository = clienteRepository;
         this.estoqueUnidadeRepository = estoqueUnidadeRepository;
+        this.promocaoRepository = promocaoRepository;
         this.pedidoMapper = pedidoMapper;
     }
 
@@ -85,8 +89,18 @@ public class PedidoService {
         novoPedido.setItens(itensDoPedido);
         novoPedido.setValorTotal(valorTotal);
 
+        if (pedidoCreateRequest.isUsarPontosFidelidade() && pedidoCreateRequest.isUsarCodigoDeDesconto()){
+            throw new RegraNegocioException("Não é permitido a utilização de dois métodos de desconto simultaneamente ");
+        }
+
         if (pedidoCreateRequest.isUsarPontosFidelidade()) {
-            BigDecimal valorDesconto = calcularDesconto(clienteBuscado.getQuantPontosFidelidade(), valorTotal);
+            BigDecimal valorDesconto = calcularDescontoFidelidade(clienteBuscado.getQuantPontosFidelidade(), valorTotal);
+            novoPedido.setValorDesconto(valorDesconto);
+            novoPedido.setValorComDesconto(valorTotal.subtract(valorDesconto));
+        }
+
+        if (pedidoCreateRequest.isUsarCodigoDeDesconto()) {
+            BigDecimal valorDesconto = calcularDescontoCodigo(pedidoCreateRequest.getCodigoDesconto(), valorTotal, unidadeBuscada);
             novoPedido.setValorDesconto(valorDesconto);
             novoPedido.setValorComDesconto(valorTotal.subtract(valorDesconto));
         }
@@ -187,7 +201,7 @@ public class PedidoService {
     }
 
 
-    public BigDecimal calcularDesconto(Integer quantidadePontosCliente, BigDecimal valorTotal){
+    public BigDecimal calcularDescontoFidelidade(Integer quantidadePontosCliente, BigDecimal valorTotal){
 
         BigDecimal quantidadePontos = BigDecimal.valueOf(quantidadePontosCliente);
         BigDecimal total = valorTotal;
@@ -207,6 +221,37 @@ public class PedidoService {
             BigDecimal valorDesconto = quantidadePontos.divide(new BigDecimal(1000));
             return valorDesconto;
         }
+    }
+
+    public BigDecimal calcularDescontoCodigo(String codigoPromocao, BigDecimal valorTotal, Unidade unidade){
+        Promocao promocao = promocaoRepository.findByCodigoPromocao(codigoPromocao)
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Promoção não encontrada"));
+
+        BigDecimal valorDesconto;
+        LocalDateTime dataAtual = LocalDateTime.now();
+
+
+        if (dataAtual.isBefore(promocao.getInicioPromocao()) && dataAtual.isAfter(promocao.getTerminoPromocao())) {
+            throw new RegraNegocioException("A promoção está encerrada ou não ainda não foi iniciada");
+        }
+
+        boolean unidadeValida = promocao.getUnidades().stream().anyMatch(u -> u.getId().equals(unidade.getId()));
+
+        if (!unidadeValida) {
+            throw new RegraNegocioException("Sua unidade não está incluída nessa promoção");
+        }
+
+        if (promocao.getTipoPromocao() == TipoPromocao.VALOR_FIXO){
+            valorDesconto = promocao.getValorPromocao();
+        } else {
+            valorDesconto = valorTotal.multiply(promocao.getValorPromocao()).divide(new BigDecimal(100));
+        }
+
+        if (valorDesconto.compareTo(valorTotal) > 0) {
+            return valorTotal;
+        }
+
+        return valorDesconto;
     }
 
 }

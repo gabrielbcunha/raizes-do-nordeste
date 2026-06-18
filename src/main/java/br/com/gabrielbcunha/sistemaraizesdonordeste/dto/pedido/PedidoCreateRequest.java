@@ -40,4 +40,9 @@ public class PedidoCreateRequest {
     @NotEmpty(message="Deve ser informado se será aplicado os pontos fidelidade ou não")
     private boolean usarPontosFidelidade;
 
+    @NotEmpty(message="Deve ser informado se será aplicado código de desconto ou não")
+    private boolean usarCodigoDeDesconto;
+
+    private String codigoDesconto;
+
 }

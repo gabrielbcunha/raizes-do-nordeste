@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Entity
 @Table(name="menu_unidade")
@@ -26,4 +29,7 @@ public class MenuUnidade {
     private Item item;
 
     private Boolean disponivel;
+
+    @ManyToMany(mappedBy = "itensMenu")
+    private Set<Promocao> promocoes = new HashSet<>();
 }

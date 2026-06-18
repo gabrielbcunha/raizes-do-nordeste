@@ -64,6 +64,12 @@ public class Pedido {
     @Column(nullable = false)
     private boolean usarPontosFidelidade;
 
+    @Column(nullable = false)
+    private boolean usarCodigoDeDesconto;
+
+    @Column(nullable = true)
+    private String codigoDesconto;
+
     @Column(nullable = true, precision = 10, scale = 2)
     private BigDecimal valorDesconto;
 
