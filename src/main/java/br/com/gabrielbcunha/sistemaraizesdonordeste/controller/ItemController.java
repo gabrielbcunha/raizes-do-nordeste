@@ -30,7 +30,8 @@ public class ItemController {
             description="Endpoint para o cadastro de um novo tipo de Item")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Item cadastrado com sucesso"),
-            @ApiResponse(responseCode = "422", description = "Item não cadastrado, alguma informação requerida com preenchimento incorreto")
+            @ApiResponse(responseCode = "422", description = "Item não cadastrado, alguma informação requerida com preenchimento incorreto"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
     })
     public ResponseEntity<ItemCreateResponse> cadastrarItem(@Valid @RequestBody ItemCreateRequest itemCreateRequest){
         ItemCreateResponse cadastroItem = itemService.cadastrarItem(itemCreateRequest);
@@ -40,7 +41,8 @@ public class ItemController {
     @GetMapping()
     @Operation(summary="Lista todos os Itens")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo")
+            @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
     })
     public ResponseEntity<Page<ItemCreateResponse>> listarTodosItems(Pageable pageable){
         Page<ItemCreateResponse> listaItems = itemService.listarTodosItems(pageable);

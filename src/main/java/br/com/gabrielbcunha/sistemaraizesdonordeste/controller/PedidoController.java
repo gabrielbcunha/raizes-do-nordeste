@@ -32,7 +32,8 @@ public class PedidoController {
             description="Endpoint para o cadastro de um novo pedido")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Pedido cadastrado com sucesso"),
-            @ApiResponse(responseCode = "422", description = "Pedido não cadastrado, alguma informação requerida com preenchimento incorreto")
+            @ApiResponse(responseCode = "422", description = "Pedido não cadastrado, alguma informação requerida com preenchimento incorreto"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
     })
     public ResponseEntity<PedidoCreateResponse> cadastrarPedido(@Valid @RequestBody PedidoCreateRequest pedidoCreateRequest) {
         PedidoCreateResponse cadastroPedido = pedidoService.cadastrarPedido(pedidoCreateRequest);
@@ -43,7 +44,8 @@ public class PedidoController {
     @Operation(summary="Lista os Pedidos",
                 description="Endpoint para listar todos os pedidos, pode ser filtra para listar por canalPedido especifico")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo")
+            @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
     })
     public ResponseEntity<Page<PedidoCreateResponse>> listarPedidos(@RequestParam(required = false) CanalPedido canalPedido, @PageableDefault(sort="unidade.id", direction= Sort.Direction.ASC) Pageable pageable ) {
         Page<PedidoCreateResponse> listarPedidos = pedidoService.listarPedidos(canalPedido, pageable);
@@ -52,12 +54,28 @@ public class PedidoController {
 
 
     @PostMapping("/cancelar/{id}")
+    @Operation(summary="Busca e cancela pedido repondo estoque",
+            description="Busca pedido e o cancela, buscando sua unidade de origem e repondo seu estoque")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pedido cancelado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Pedido ou Unidade não encontrados"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
+    })
     public ResponseEntity<PedidoCancelarResponse> cancelarPedido(@PathVariable Long id) {
         PedidoCancelarResponse cancelarPedido = pedidoService.cancelarPedido(id);
         return ResponseEntity.status(HttpStatus.OK).body(cancelarPedido);
     }
 
+
     @PatchMapping("/status/{id}")
+    @Operation(summary="Busca e modifica status do pedido",
+            description="Busca pedido e modifica seu status, validando se a ação é permitida, proibindo que pedido regressem para status anteriores")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Status do pedido modificado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
+            @ApiResponse(responseCode = "406", description = "O pedido não pode ser alterado para esse status por estar em um status posterior"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
+    })
     public ResponseEntity<PedidoPatchStatusResponse> mudarStatusPedido(@PathVariable Long id, @Valid @RequestBody PedidoPatchStatusRequest statusRequest) {
         PedidoPatchStatusResponse mudarStatusPedido = pedidoService.mudarStatusPedido(id, statusRequest);
         return ResponseEntity.status(HttpStatus.OK).body(mudarStatusPedido);

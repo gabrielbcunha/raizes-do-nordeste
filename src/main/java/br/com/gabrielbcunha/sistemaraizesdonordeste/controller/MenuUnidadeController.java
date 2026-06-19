@@ -33,7 +33,8 @@ public class MenuUnidadeController {
             description="Endpoint para o cadastro de um novo Item no menu de uma unidade válida informada")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Item de menu cadastrado com sucesso"),
-            @ApiResponse(responseCode = "422", description = "Item não cadastrado, alguma informação requerida com preenchimento incorreto")
+            @ApiResponse(responseCode = "422", description = "Item não cadastrado, alguma informação requerida com preenchimento incorreto"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
     })
     public ResponseEntity<MenuUnidadeCreateResponse> adicionarItemMenu(@Valid @RequestBody MenuUnidadeCreateRequest menuUnidadeCreateRequest){
         MenuUnidadeCreateResponse cadastroItemMenu = menuUnidadeService.cadastarItemMenu(menuUnidadeCreateRequest);

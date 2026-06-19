@@ -32,7 +32,8 @@ public class EstoqueUnidadeController {
             description="Endpoint para o cadastro de um novo Item no estoque de uma unidade válida informada")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Item de estoque cadastrado com sucesso"),
-            @ApiResponse(responseCode = "422", description = "Item não cadastrado, alguma informação requerida com preenchimento incorreto")
+            @ApiResponse(responseCode = "422", description = "Item não cadastrado, alguma informação requerida com preenchimento incorreto"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
     })
     public ResponseEntity<EstoqueUnidadeCreateResponse> adicionarItemEstoque(@Valid @RequestBody EstoqueUnidadeCreateRequest estoqueUnidadeCreateRequest) {
         EstoqueUnidadeCreateResponse cadastroItemEstoque = estoqueUnidadeService.cadastrarItemEstoque(estoqueUnidadeCreateRequest);
@@ -42,7 +43,8 @@ public class EstoqueUnidadeController {
     @GetMapping()
     @Operation(summary="Lista todos os Itens de todos os Estoques")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo")
+            @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
     })
     public ResponseEntity<Page<EstoqueUnidadeCreateResponse>> listarTodosEstoques(@PageableDefault(sort="unidade.id", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<EstoqueUnidadeCreateResponse> listaEstoqueUnidade = estoqueUnidadeService.listarTodosEstoques(pageable);

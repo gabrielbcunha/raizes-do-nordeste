@@ -30,7 +30,8 @@ public class UnidadeController {
             description="Endpoint para o cadastro de uma nova unidade")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Unidade cadastrado com sucesso"),
-            @ApiResponse(responseCode = "422", description = "Unidade não cadastrado, alguma informação requerida com preenchimento incorreto")
+            @ApiResponse(responseCode = "422", description = "Unidade não cadastrado, alguma informação requerida com preenchimento incorreto"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
     })
     public ResponseEntity<UnidadeCreateResponse> cadastrarUnidade(@Valid @RequestBody UnidadeCreateRequest unidadeCreateRequest){
         UnidadeCreateResponse cadastroUnidade = unidadeService.cadastrarUnidade(unidadeCreateRequest);
@@ -40,7 +41,8 @@ public class UnidadeController {
     @GetMapping()
     @Operation(summary="Lista todos as Unidades")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo")
+            @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
     })
     public ResponseEntity<Page<UnidadeCreateResponse>> listarUnidades(Pageable pageable){
         Page<UnidadeCreateResponse> listaUnidades = unidadeService.listarUnidades(pageable);
