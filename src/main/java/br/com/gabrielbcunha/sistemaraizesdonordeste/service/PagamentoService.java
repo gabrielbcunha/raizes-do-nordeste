@@ -13,11 +13,13 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPedido;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.ClienteRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.PedidoRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
 @Service
+@Slf4j
 public class PagamentoService {
 
     private final PedidoRepository pedidoRepository;
@@ -60,6 +62,7 @@ public class PagamentoService {
         } else if (request.getFormaPagamento() == FormaPagamento.CARTAO_CREDITO ||  request.getFormaPagamento() == FormaPagamento.CARTAO_DEBITO || request.getFormaPagamento() == FormaPagamento.VALE_ALIMENTACAO) {
             Boolean pago = testeDeLimiteCartao();
             if (pago) {
+                log.info("Mock Pagamento: Pagamento CONFIRMADO para o Pedido ID [{}]. Valor processado com sucesso.", id);
                 pedidoProcurado.setStatusPedido(StatusPedido.CONFIRMADO);
                 pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_CONFIRMADO);
                 if (programaFidelidadeAtivo) {
@@ -69,6 +72,7 @@ public class PagamentoService {
                 }
             } else {
                 pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_RECUSADO);
+                log.warn("Mock Pagamento: Pagamento RECUSADO para o Pedido ID [{}]. Limite indisponível.", id);
                 pedidoService.cancelarPedido(id);
             }
         }

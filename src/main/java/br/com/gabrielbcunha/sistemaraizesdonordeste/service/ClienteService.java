@@ -12,6 +12,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Usuario;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Perfil;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.ClienteRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UsuarioRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
+@Slf4j
 public class ClienteService {
 
     private final PasswordEncoder passwordEncoder;
@@ -92,10 +94,12 @@ public class ClienteService {
             clienteBuscado.setQuantPontosFidelidade(0);
             clienteRepository.save(clienteBuscado);
         } else {
+            log.warn("LGPD: Tentativa de anonimização bloqueada para o ID [{}]. Palavra de consentimento incorreta.", id);
             throw new RegraNegocioException("Palavra de consentimento inválida");
         }
         ClienteDeleteResponse clienteDeletado = clienteMapper.toDtoDelete(clienteBuscado);
         clienteDeletado.setDataDelecao(LocalDateTime.now());
+        log.info("LGPD: Dados do Cliente ID [{}] foram anonimizados com sucesso. Consentimento validado.", id);
         return clienteDeletado;
     }
 

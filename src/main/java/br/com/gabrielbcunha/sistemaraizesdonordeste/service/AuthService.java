@@ -8,12 +8,15 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.mapper.ClienteMapper;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Usuario;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.ClienteRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.security.JwtService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class AuthService {
 
     private final JwtService jwtService;
@@ -36,6 +39,7 @@ public class AuthService {
         Usuario usuario = (Usuario) autenticacao.getPrincipal();
         String Token = jwtService.geradorToken(usuario);
         TokenResponse tokenResponse = new TokenResponse(Token);
+        log.info("Login realizado com sucesso para o usuário [{}]", request.getUserName());
         return tokenResponse;
     }
 

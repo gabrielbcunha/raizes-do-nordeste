@@ -12,6 +12,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPagamento;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.StatusPedido;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.TipoPromocao;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
@@ -90,6 +92,7 @@ public class PedidoService {
         novoPedido.setValorTotal(valorTotal);
 
         if (pedidoCreateRequest.isUsarPontosFidelidade() && pedidoCreateRequest.isUsarCodigoDeDesconto()){
+            log.warn("Regra de Negócio: Cliente ID [{}] tentou utilizar pontos de fidelidade e cupom simultaneamente. Ação bloqueada.", pedidoCreateRequest.getClienteId());
             throw new RegraNegocioException("Não é permitido a utilização de dois métodos de desconto simultaneamente ");
         }
 
@@ -109,6 +112,7 @@ public class PedidoService {
         novoPedido.setQuantidadeTotalPontosFidelidade(new BigDecimal(100).multiply(valorBaseParaPontos).intValue());
 
         Pedido pedidoSalvo = pedidoRepository.save(novoPedido);
+        log.info("Novo pedido criado com sucesso! Pedido ID: [{}], Cliente ID: [{}], Valor Total: R$ [{}]", pedidoSalvo.getId(), clienteBuscado.getId(), pedidoSalvo.getValorTotal());
         return pedidoMapper.toDto(pedidoSalvo);
     }
 
@@ -154,6 +158,7 @@ public class PedidoService {
 
             }
         }
+        log.info("Pedido ID [{}] foi CANCELADO. Os itens foram devolvidos ao estoque da unidade.", id);
         return pedidoMapper.toDtoCancel(pedidoCancelado);
     }
 
@@ -231,7 +236,7 @@ public class PedidoService {
         LocalDateTime dataAtual = LocalDateTime.now();
 
 
-        if (dataAtual.isBefore(promocao.getInicioPromocao()) && dataAtual.isAfter(promocao.getTerminoPromocao())) {
+        if (dataAtual.isBefore(promocao.getInicioPromocao()) || dataAtual.isAfter(promocao.getTerminoPromocao())) {
             throw new RegraNegocioException("A promoção está encerrada ou não ainda não foi iniciada");
         }
 

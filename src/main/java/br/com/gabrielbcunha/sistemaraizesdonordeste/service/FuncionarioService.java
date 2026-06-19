@@ -15,6 +15,7 @@ import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Perfil;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.FuncionarioRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UnidadeRepository;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.repository.UsuarioRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
+@Slf4j
 public class FuncionarioService {
 
     private final FuncionarioRepository funcionarioRepository;
@@ -126,6 +128,7 @@ public class FuncionarioService {
                 funcionarioBuscado.setNome("Anonimizado");
                 funcionarioRepository.save(funcionarioBuscado);
             } else {
+                log.warn("LGPD: Tentativa de anonimização bloqueada para o ID [{}]. Palavra de consentimento incorreta.", id);
                 throw new RegraNegocioException("Palavra de consentimento inválida");
             }
         }
@@ -133,6 +136,7 @@ public class FuncionarioService {
         funcionarioDeletado.setNomeFuncionario(funcionarioBuscado.getNome());
         funcionarioDeletado.setDataDelecao(LocalDateTime.now());
         funcionarioDeletado.setResponsavelPelaDelecao(autenticacaoAtual.getName());
+        log.info("LGPD: Dados do Funcionário ID [{}] foram anonimizados com sucesso. Consentimento validado.", id);
         return funcionarioDeletado;
     }
 
