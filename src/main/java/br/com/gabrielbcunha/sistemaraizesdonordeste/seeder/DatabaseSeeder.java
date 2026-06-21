@@ -490,7 +490,8 @@ public class DatabaseSeeder implements CommandLineRunner {
             LocalDateTime dataInicio = LocalDateTime.of(2026, 6, 20, 14, 0);
             LocalDateTime dataFinal = LocalDateTime.of(2026, 10, 20, 20, 0);
 
-            criarPromocao("promocao",
+            criarPromocao("Primeira Promoção",
+                    "promocao",
                     new BigDecimal("15"),
                     unidades,
                     menuUnidades,
@@ -615,8 +616,9 @@ public class DatabaseSeeder implements CommandLineRunner {
         pedidoRepository.save(pedido);
     }
 
-    public void criarPromocao(String codigoPromocao, BigDecimal valorPromocao, Set<Unidade> unidades, Set<MenuUnidade> itensMenu, List<TipoEntrega> entregasEscritasNaPromocao, List<CanalPedido> canaisEscritosNaPromocao, List<FormaPagamento> pagamentosEscritosNaPromocao, TipoPromocao tipoPromocao, LocalDateTime inicioPromocao, LocalDateTime terminoPromocao) {
+    public void criarPromocao(String nomePromocao, String codigoPromocao, BigDecimal valorPromocao, Set<Unidade> unidades, Set<MenuUnidade> itensMenu, List<TipoEntrega> entregasEscritasNaPromocao, List<CanalPedido> canaisEscritosNaPromocao, List<FormaPagamento> pagamentosEscritosNaPromocao, TipoPromocao tipoPromocao, LocalDateTime inicioPromocao, LocalDateTime terminoPromocao) {
         Promocao promocao = new Promocao();
+        promocao.setNomePromocao(nomePromocao);
         promocao.setCodigoPromocao(codigoPromocao);
         promocao.setValorPromocao(valorPromocao);
         promocao.setUnidades(unidades);
