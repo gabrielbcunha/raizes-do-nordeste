@@ -11,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
@@ -23,24 +21,26 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final FuncionarioRepository funcionarioRepository;
     private final UnidadeRepository unidadeRepository;
     private final ItemRepository itemRepository;
-    private final ItemPedidoRepository itemPedidoRepository;
+    private final PromocaoRepository promocaoRepository;
     private final PedidoRepository pedidoRepository;
     private final MenuUnidadeRepository menuUnidadeRepository;
     private final EstoqueUnidadeRepository estoqueUnidadeRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DatabaseSeeder(UsuarioRepository usuarioRepository, ClienteRepository clienteRepository, FuncionarioRepository funcionarioRepository, UnidadeRepository unidadeRepository, ItemRepository itemRepository, ItemPedidoRepository itemPedidoRepository, PedidoRepository pedidoRepository, MenuUnidadeRepository menuUnidadeRepository, EstoqueUnidadeRepository estoqueUnidadeRepository, PasswordEncoder passwordEncoder) {
+    public DatabaseSeeder(UsuarioRepository usuarioRepository, ClienteRepository clienteRepository, FuncionarioRepository funcionarioRepository, UnidadeRepository unidadeRepository, ItemRepository itemRepository, PromocaoRepository promocaoRepository, PedidoRepository pedidoRepository, MenuUnidadeRepository menuUnidadeRepository, EstoqueUnidadeRepository estoqueUnidadeRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.clienteRepository = clienteRepository;
         this.funcionarioRepository = funcionarioRepository;
         this.unidadeRepository = unidadeRepository;
         this.itemRepository = itemRepository;
-        this.itemPedidoRepository = itemPedidoRepository;
+        this.promocaoRepository = promocaoRepository;
         this.pedidoRepository = pedidoRepository;
         this.menuUnidadeRepository = menuUnidadeRepository;
         this.estoqueUnidadeRepository = estoqueUnidadeRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
+
     @Transactional
     @Override
     public void run(String... args) throws Exception {
@@ -465,13 +465,48 @@ public class DatabaseSeeder implements CommandLineRunner {
                     TipoEntrega.ENTREGA_CASA);
         }
 
+        Optional<Promocao> primeiraPromocao = promocaoRepository.findById(1L);
+        if (primeiraPromocao.isEmpty()) {
+
+            Set<Unidade> unidades = new HashSet<>();
+            unidades.add(unidadeRepository.findById(1L)
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Unidade nao encontrada")));
+            Set<MenuUnidade> menuUnidades = new HashSet<>();
+            menuUnidades.add(menuUnidadeRepository.findById(1L)
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Menu não encontrado")));
+            menuUnidades.add(menuUnidadeRepository.findById(2L)
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Menu não encontrado")));
+            List<TipoEntrega> entregasEscritasNaPromocao = new ArrayList<>();
+            entregasEscritasNaPromocao.add(TipoEntrega.ENTREGA_CASA);
+            entregasEscritasNaPromocao.add(TipoEntrega.RETIRADA_BALCAO);
+            List<CanalPedido> canaisEscritosNaPromocao = new ArrayList<>();
+            canaisEscritosNaPromocao.add(CanalPedido.BALCAO);
+            canaisEscritosNaPromocao.add(CanalPedido.TOTEM);
+            canaisEscritosNaPromocao.add(CanalPedido.WEB);
+            canaisEscritosNaPromocao.add(CanalPedido.APP);
+            List<FormaPagamento> pagamentosEscritosNaPromocao = new ArrayList<>();
+            pagamentosEscritosNaPromocao.add(FormaPagamento.PIX);
+            pagamentosEscritosNaPromocao.add(FormaPagamento.DINHEIRO);
+            LocalDateTime dataInicio = LocalDateTime.of(2026, 6, 20, 14, 0);
+            LocalDateTime dataFinal = LocalDateTime.of(2026, 10, 20, 20, 0);
+
+            criarPromocao("promocao",
+                    new BigDecimal("15"),
+                    unidades,
+                    menuUnidades,
+                    entregasEscritasNaPromocao,
+                    canaisEscritosNaPromocao,
+                    pagamentosEscritosNaPromocao,
+                    TipoPromocao.VALOR_FIXO,
+                    dataInicio,
+                    dataFinal);
+        }
     }
 
     private void criarItem(String nome, String descricao, Integer quantidadePontosFidelidade, BigDecimal preco) {
         Item item = new Item();
         item.setNome(nome);
         item.setDescricao(descricao);
-        item.setQuantidadePontosFidelidade(quantidadePontosFidelidade);
         item.setPreco(preco);
         itemRepository.save(item);
     }
@@ -542,11 +577,10 @@ public class DatabaseSeeder implements CommandLineRunner {
         ItemPedido itemPedido = new ItemPedido();
 
         Item item = itemRepository.findById(idItem)
-                .orElseThrow(()-> new RecursoNaoEncontradoException("Item naõ encontrado"));
+                .orElseThrow(()-> new RecursoNaoEncontradoException("Item não encontrado"));
 
         itemPedido.setItem(item);
         itemPedido.setQuantidade(quantidade);
-        itemPedido.setQuantidadeTotalParcialPontosFidelidade(item.getQuantidadePontosFidelidade() * quantidade);
         itemPedido.setValorUnitario(item.getPreco());
 
         BigDecimal quantidadeDecimal =  new BigDecimal(quantidade);
@@ -567,21 +601,34 @@ public class DatabaseSeeder implements CommandLineRunner {
         pedido.setStatusPagamento(statusPagamento);
         pedido.setTipoEntrega(tipoEntrega);
 
-        int totalPontos = 0;
         BigDecimal totalValor = BigDecimal.ZERO;
 
         for (ItemPedido item : itens) {
             item.setPedido(pedido);
-            totalPontos += item.getQuantidadeTotalParcialPontosFidelidade();
             totalValor = totalValor.add(item.getValorTotalParcial());
         }
+
+        int totalPontos = new BigDecimal("100").multiply(totalValor).intValue();
 
         pedido.setQuantidadeTotalPontosFidelidade(totalPontos);
         pedido.setValorTotal(totalValor);
         pedidoRepository.save(pedido);
     }
 
-
+    public void criarPromocao(String codigoPromocao, BigDecimal valorPromocao, Set<Unidade> unidades, Set<MenuUnidade> itensMenu, List<TipoEntrega> entregasEscritasNaPromocao, List<CanalPedido> canaisEscritosNaPromocao, List<FormaPagamento> pagamentosEscritosNaPromocao, TipoPromocao tipoPromocao, LocalDateTime inicioPromocao, LocalDateTime terminoPromocao) {
+        Promocao promocao = new Promocao();
+        promocao.setCodigoPromocao(codigoPromocao);
+        promocao.setValorPromocao(valorPromocao);
+        promocao.setUnidades(unidades);
+        promocao.setItensMenu(itensMenu);
+        promocao.setEntregasEscritasNaPromocao(entregasEscritasNaPromocao);
+        promocao.setCanaisEscritosNaPromocao(canaisEscritosNaPromocao);
+        promocao.setPagamentosEscritosNaPromocao(pagamentosEscritosNaPromocao);
+        promocao.setTipoPromocao(tipoPromocao);
+        promocao.setInicioPromocao(inicioPromocao);
+        promocao.setTerminoPromocao(terminoPromocao);
+        promocaoRepository.save(promocao);
+    }
 }
 
 
