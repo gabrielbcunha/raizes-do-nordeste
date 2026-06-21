@@ -44,7 +44,8 @@ public class MenuUnidadeController {
     @GetMapping()
     @Operation(summary="Lista os Itens dos Menus das Unidades podendo ou não ser filtrado por Unidade")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo")
+            @ApiResponse(responseCode = "200", description = "Lista encontrada, podendo conter ou não conteúdo"),
+            @ApiResponse(responseCode = "403", description = "Usuário não tem permissão para acessar este recurso")
     })
     public ResponseEntity<Page<MenuUnidadeCreateResponse>> listarTodosMenuUnidades(@RequestParam(required = false) Long idUnidade, @PageableDefault(sort="unidade.id", direction = Sort.Direction.ASC) Pageable pageable){
         Page<MenuUnidadeCreateResponse> listarMenuUnidade = menuUnidadeService.listarMenuUnidades(idUnidade,pageable);
