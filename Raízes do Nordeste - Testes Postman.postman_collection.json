@@ -1,0 +1,533 @@
+{
+  "info": {
+    "_postman_id": "d01bdd37-0c0d-4454-9161-ea06186b6113",
+    "name": "Raízes do Nordeste - Testes Postman",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53042985",
+    "_collection_link": "https://go.postman.co/collection/53042985-d01bdd37-0c0d-4454-9161-ea06186b6113?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "T01 - Tentar acessar lista de pedidos  - Forbidden(403)",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/pedidos",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pedidos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T02 - Criar cliente com sucesso - Created (201)",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"nome\":\"Cliente Teste\",\r\n    \"cpf\":\"90204298849\",\r\n    \"numContato\":\"11200000003\",\r\n    \"email\":\"email@teste.com\",\r\n    \"senha\":\"123456\",\r\n    \"pontosFidelidadeAtivos\":true\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/auth/cadastrar",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "auth",
+            "cadastrar"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T03 - Realizar Login e receber Token JWT - OK (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var resposta = pm.response.json();\r",
+              "pm.collectionVariables.set(\"meuToken\", resposta.token); \r",
+              "console.log(\"Token salvo na Collection: \" + pm.collectionVariables.get(\"meuToken\"));"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"userName\": \"email@teste.com\",\r\n    \"senha\":\"123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T04 - Tentar cadastrar Item como Cliente - Forbidden (403)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{meuToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"nome\":\"Novo Item\",\r\n    \"descricao\":\"Item de teste\",\r\n    \"preco\":20.00\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/itens",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "itens"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T05 - Tentar criar pedido sem unidade (422 )",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{meuToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"clienteId\":3,\r\n    \"canalPedido\":\"BALCAO\",\r\n    \"itens\": [\r\n        {\r\n            \"itemId\":1,\r\n            \"quantidade\":2\r\n        },\r\n        {\r\n            \"itemId\":9,\r\n            \"quantidade\":2\r\n        }\r\n    ],\r\n    \"formaPagamento\":\"DINHEIRO\",\r\n    \"tipoEntrega\":\"RETIRADA_BALCAO\",\r\n    \"usarPontosFidelidade\":false,\r\n    \"usarCodigoDeDesconto\":false,\r\n    \"codigoDesconto\":null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/pedido",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pedido"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T06 - Criar primeiro pedido Valido (201)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{meuToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"clienteId\": 3,\r\n    \"unidadeId\": 1,\r\n    \"canalPedido\": \"BALCAO\",\r\n    \"itens\": [\r\n        {\r\n            \"itemId\": 1,\r\n            \"quantidade\": 2\r\n        },\r\n        {\r\n            \"itemId\": 9,\r\n            \"quantidade\": 2\r\n        }\r\n    ],\r\n    \"formaPagamento\": \"PIX\",\r\n    \"tipoEntrega\": \"RETIRADA_BALCAO\",\r\n    \"usarPontosFidelidade\":false,\r\n    \"usarCodigoDeDesconto\":false,\r\n    \"codigoDesconto\":null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/pedido",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pedido"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T07 - Criar segundo pedido Valido (201)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{meuToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"clienteId\": 3,\r\n    \"unidadeId\": 1,\r\n    \"canalPedido\": \"TOTEM\",\r\n    \"itens\": [\r\n        {\r\n            \"itemId\": 3,\r\n            \"quantidade\": 1\r\n        },\r\n        {\r\n            \"itemId\": 5,\r\n            \"quantidade\": 3\r\n        }\r\n    ],\r\n    \"formaPagamento\": \"DINHEIRO\",\r\n    \"tipoEntrega\": \"RETIRADA_BALCAO\",\r\n    \"usarPontosFidelidade\":false,\r\n    \"usarCodigoDeDesconto\":false,\r\n    \"codigoDesconto\":null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/pedido",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pedido"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T08 - Tentar pagar o primeiro pedido PIX - Recusado (404)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{meuToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"pedidoId\":4,\r\n    \"formaPagamento\":\"PIX\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/pagamento/pedido/4",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pagamento",
+            "pedido",
+            "4"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T09 - Tentar pagar o segundo pedido Dinheiro - aprovado",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{meuToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"pedidoId\":5,\r\n    \"formaPagamento\":\"DINHEIRO\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/pagamento/pedido/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pagamento",
+            "pedido",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T10 - Verificar pontos fidelidade do cliente (200)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{meuToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/fidelidade/3",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "fidelidade",
+            "3"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T11 - Tentar criar pedido com estoque insuficiente  - (422)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{meuToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"clienteId\": 3,\r\n    \"unidadeId\": 1,\r\n    \"canalPedido\": \"BALCAO\",\r\n    \"itens\": [\r\n        {\r\n            \"itemId\": 1,\r\n            \"quantidade\": 5000\r\n        },\r\n        {\r\n            \"itemId\": 9,\r\n            \"quantidade\": 2500\r\n        }\r\n    ],\r\n    \"formaPagamento\": \"PIX\",\r\n    \"tipoEntrega\": \"RETIRADA_BALCAO\",\r\n    \"usarPontosFidelidade\":false,\r\n    \"usarCodigoDeDesconto\":false,\r\n    \"codigoDesconto\":null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/pedido",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pedido"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T12 - Tentar criar pedido com item inexistente (404)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{meuToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"clienteId\": 3,\r\n    \"unidadeId\": 1,\r\n    \"canalPedido\": \"BALCAO\",\r\n    \"itens\": [\r\n        {\r\n            \"itemId\": 22,\r\n            \"quantidade\": 5000\r\n        },\r\n        {\r\n            \"itemId\": 9,\r\n            \"quantidade\": 2500\r\n        }\r\n    ],\r\n    \"formaPagamento\": \"PIX\",\r\n    \"tipoEntrega\": \"RETIRADA_BALCAO\",\r\n    \"usarPontosFidelidade\":false,\r\n    \"usarCodigoDeDesconto\":false,\r\n    \"codigoDesconto\":null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/pedido",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pedido"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "T13 - Anonimizar conta cliente - OK (200)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{meuToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"consentimento\":\"aceito\",\r\n    \"senha\":\"123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/cliente/3",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "cliente",
+            "3"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwtToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "jwtToken",
+      "value": ""
+    },
+    {
+      "key": "meuToken",
+      "value": ""
+    }
+  ]
+}

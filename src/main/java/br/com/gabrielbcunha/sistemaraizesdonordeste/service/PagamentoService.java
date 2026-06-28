@@ -3,6 +3,7 @@ package br.com.gabrielbcunha.sistemaraizesdonordeste.service;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pagamento.PagamentoRequest;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pagamento.PagamentoResponse;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pontosFidelidade.PontosFidelidadeCreateRequest;
+import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.PagamentoRecusadoException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.exception.RecursoNaoEncontradoException;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Cliente;
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Pedido;
@@ -42,6 +43,7 @@ public class PagamentoService {
         Cliente clientePedido = clienteRepository.findById(pedidoProcurado.getCliente().getId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente não encontrado!"));
 
+        Long clienteId = pedidoProcurado.getCliente().getId();
         String clienteNumeroFidelidade = clientePedido.getNumCadastroFidelidade();
         Long pedidoId = pedidoProcurado.getId();
         Integer quantidadePontos = pedidoProcurado.getQuantidadeTotalPontosFidelidade();
@@ -51,14 +53,19 @@ public class PagamentoService {
         Integer quantidadeExistentePontosFidelidade = clientePedido.getQuantPontosFidelidade();
         Integer quantidadePontosFidelidade = pedidoProcurado.getQuantidadeTotalPontosFidelidade();
 
-        if (request.getFormaPagamento() == FormaPagamento.DINHEIRO || request.getFormaPagamento() == FormaPagamento.PIX) {
+        if (request.getFormaPagamento() == FormaPagamento.DINHEIRO) {
             pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_CONFIRMADO);
             pedidoProcurado.setStatusPedido(StatusPedido.CONFIRMADO);
-            if (programaFidelidadeAtivo) {
-                criarPontoFidelidade(clienteNumeroFidelidade, pedidoId, quantidadePontos);
+            if (clientePedido.isProgramaFidelidadeAtivo()) {
+                criarPontoFidelidade(clienteId, clienteNumeroFidelidade, pedidoId, quantidadePontos);
                 clientePedido.setQuantPontosFidelidade(quantidadeExistentePontosFidelidade + quantidadePontosFidelidade);
-                descontarPontosFidelidade(pedidoProcurado, clientePedido, pedidoId, clienteNumeroFidelidade);
+                descontarPontosFidelidade(pedidoProcurado, clientePedido, pedidoId, clienteNumeroFidelidade, clienteId);
             }
+        } else if(request.getFormaPagamento() == FormaPagamento.PIX) {
+            pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_RECUSADO);
+            log.warn("Pagamento RECUSADO para o Pedido ID [{}]. Pix Indisponível.", id);
+            pedidoService.cancelarPedido(id);
+            throw new PagamentoRecusadoException("Pagamento recusado para o Pedido ID [" + id + "]");
         } else if (request.getFormaPagamento() == FormaPagamento.CARTAO_CREDITO ||  request.getFormaPagamento() == FormaPagamento.CARTAO_DEBITO || request.getFormaPagamento() == FormaPagamento.VALE_ALIMENTACAO) {
             Boolean pago = testeDeLimiteCartao();
             if (pago) {
@@ -67,13 +74,14 @@ public class PagamentoService {
                 pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_CONFIRMADO);
                 if (programaFidelidadeAtivo) {
                     clientePedido.setQuantPontosFidelidade(quantidadeExistentePontosFidelidade + quantidadePontosFidelidade);
-                    criarPontoFidelidade(clienteNumeroFidelidade, pedidoId, quantidadePontos);
-                    descontarPontosFidelidade(pedidoProcurado, clientePedido, pedidoId, clienteNumeroFidelidade);
+                    criarPontoFidelidade(clienteId, clienteNumeroFidelidade, pedidoId, quantidadePontos);
+                    descontarPontosFidelidade(pedidoProcurado, clientePedido, pedidoId, clienteNumeroFidelidade, clienteId);
                 }
             } else {
                 pedidoProcurado.setStatusPagamento(StatusPagamento.PAGAMENTO_RECUSADO);
                 log.warn("Mock Pagamento: Pagamento RECUSADO para o Pedido ID [{}]. Limite indisponível.", id);
                 pedidoService.cancelarPedido(id);
+                throw new PagamentoRecusadoException("Pagamento recusado para o Pedido ID [" + id + "]");
             }
         }
 
@@ -98,18 +106,19 @@ public class PagamentoService {
         return pago;
     }
 
-    public void criarPontoFidelidade(String numCadastroFidelidade, Long pedidoId, Integer quantidadePontos) {
+    public void criarPontoFidelidade(Long clienteId, String numCadastroFidelidade, Long pedidoId, Integer quantidadePontos) {
         PontosFidelidadeCreateRequest request = new PontosFidelidadeCreateRequest();
+        request.setClienteId(clienteId);
         request.setNumCadastroFidelidade(numCadastroFidelidade);
         request.setPedidoId(pedidoId);
         request.setQuantidadePontos(quantidadePontos);
         pontosFidelidadeService.criarPontosFidelidade(request);
     }
 
-    public void descontarPontosFidelidade(Pedido pedido, Cliente cliente, Long pedidoId, String numeroFidelidade) {
+    public void descontarPontosFidelidade(Pedido pedido, Cliente cliente, Long pedidoId, String numeroFidelidade, Long clienteId) {
         if (pedido.isUsarPontosFidelidade() && pedido.getValorDesconto() != null) {
             Integer quantidadeDePontosDescontados = (pedido.getValorDesconto().intValue() * 1000) * (-1);
-            criarPontoFidelidade(numeroFidelidade, pedidoId, quantidadeDePontosDescontados);
+            criarPontoFidelidade(clienteId, numeroFidelidade, pedidoId, quantidadeDePontosDescontados);
             cliente.setQuantPontosFidelidade(cliente.getQuantPontosFidelidade() + quantidadeDePontosDescontados);
         }
     }

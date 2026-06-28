@@ -35,9 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         //=================================================LOGIN=================================================
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        //=================================================CLIENTES=================================================
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/cadastrar").permitAll()
+                        //=================================================CLIENTES=================================================
                         .requestMatchers(HttpMethod.DELETE, "/cliente/{id}").hasRole("CLIENTE")
                         //=================================================FUNCIONARIOS=================================================
                         .requestMatchers(HttpMethod.GET, "/funcionarios").hasAnyRole("ADMIN","GERENTE")
@@ -65,6 +64,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/pedido").hasAnyRole("ADMIN","GERENTE", "ATENDENTE")
                         .requestMatchers(HttpMethod.POST,"/pedido/cancelar/**").hasAnyRole("ADMIN", "GERENTE", "ATENDENTE", "CLIENTE")
                         .requestMatchers(HttpMethod.PATCH,"/pedido/status/**").hasAnyRole("ADMIN", "GERENTE", "ATENDENTE", "COZINHEIRO")
+                        //=================================================PROMOCAO=================================================
+                        .requestMatchers(HttpMethod.GET,"/fidelidade/**").hasAnyRole("ADMIN", "GERENTE", "CLIENTE")
                         //=================================================Swagger=================================================
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         //========================================================================================================

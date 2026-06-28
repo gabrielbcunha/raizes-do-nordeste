@@ -1,15 +1,17 @@
 package br.com.gabrielbcunha.sistemaraizesdonordeste.dto.pontosFidelidade;
 
-import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Cliente;
-import br.com.gabrielbcunha.sistemaraizesdonordeste.model.entity.Pedido;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 public class PontosFidelidadeGetResponse {
 
-    private Cliente cliente;
+    private Long clienteId;
 
-    private Pedido pedido;
+    private Long pedidoId;
 
     private String numCadastroFidelidade;
 

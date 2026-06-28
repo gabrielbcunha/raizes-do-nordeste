@@ -59,7 +59,7 @@ public class ClienteService {
         novoCliente.setUsuario(novoUsuario);
         novoCliente.setNumCadastroFidelidade(numeroFidelidade);
         novoCliente.setQuantPontosFidelidade(0);
-
+        novoCliente.setProgramaFidelidadeAtivo(request.isPontosFidelidadeAtivos());
         Cliente cliente = clienteRepository.save(novoCliente);
         return clienteMapper.toDto(cliente);
     }

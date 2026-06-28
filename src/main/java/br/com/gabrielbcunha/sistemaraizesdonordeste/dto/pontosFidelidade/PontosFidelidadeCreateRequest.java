@@ -9,6 +9,9 @@ import lombok.Setter;
 @Setter
 public class PontosFidelidadeCreateRequest {
 
+    @NotNull(message="O Id do cliente deve existir")
+    private Long clienteId;
+
     @NotBlank(message="O número de cadastro de fidelidade deve existir")
     private String numCadastroFidelidade;
 

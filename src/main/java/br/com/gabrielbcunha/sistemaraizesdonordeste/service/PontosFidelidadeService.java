@@ -53,6 +53,7 @@ public class PontosFidelidadeService {
         PontosFidelidade pontosFidelidade = new PontosFidelidade();
         pontosFidelidade.setPedido(pedido);
         pontosFidelidade.setCliente(cliente);
+        pontosFidelidade.setNumCadastroFidelidade(numFidelidadeCliente);
         pontosFidelidade.setQuantidadePontos(pontosAdicionados);
         pontosFidelidade.setDataTransacao(dataPedido);
         pontosFidelidadeRepository.save(pontosFidelidade);

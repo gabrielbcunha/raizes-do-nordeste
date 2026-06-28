@@ -2,6 +2,7 @@ package br.com.gabrielbcunha.sistemaraizesdonordeste.exception;
 
 import br.com.gabrielbcunha.sistemaraizesdonordeste.model.enums.Erros;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -37,6 +39,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleException(Exception exception, HttpServletRequest request) {
 
+        log.error("Erro inesperado ao processar a requisição [{}]", request.getRequestURI(), exception);
         ApiError erro = new ApiError(
                 Erros.FALHA_INTERNA,
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -88,6 +91,18 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(erro);
     }
+    @ExceptionHandler(PagamentoRecusadoException.class)
+    public ResponseEntity<ApiError> pagamentoRecusado(Exception exception, HttpServletRequest request) {
+
+        ApiError erro = new ApiError(
+                Erros.PAGAMENTO_CANCELADO,
+                HttpStatus.BAD_REQUEST.value(),
+                exception.getMessage(),
+                LocalDateTime.now(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+    }
 
     @ExceptionHandler(RegraNegocioException.class)
     public ResponseEntity<ApiError> regraNegocioException(Exception exception, HttpServletRequest request) {
@@ -102,7 +117,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(erro);
     }
 
-
 }
-
-

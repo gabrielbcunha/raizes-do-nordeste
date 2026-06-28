@@ -28,7 +28,7 @@ public class MenuUnidade {
     @ManyToOne
     private Item item;
 
-    private Boolean disponivel;
+    private boolean disponivel;
 
     @ManyToMany(mappedBy = "itensMenu")
     private Set<Promocao> promocoes = new HashSet<>();
